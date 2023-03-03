@@ -1,4 +1,4 @@
-package com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.gateway.outbound;
+package com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.outbound;
 
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.PubSubConfiguration;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;

@@ -1,6 +1,6 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.controller;
 
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.gateway.outbound.OutboundConfiguration;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.outbound.OutboundConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
