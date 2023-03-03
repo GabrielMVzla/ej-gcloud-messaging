@@ -6,6 +6,7 @@ import com.google.cloud.spring.pubsub.integration.AckMode;
 import com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAdapter;
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import com.google.cloud.spring.pubsub.support.GcpPubSubHeaders;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,15 +18,17 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
 @Configuration
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Slf4j
 public class InboundConfiguration {
-    private final PubSubConfiguration pubSubConfiguration;
+
+    //private final PubSubConfiguration pubSubConfiguration;
+
     @Bean
     public PubSubInboundChannelAdapter messageChannelAdapter(@Qualifier("pubsubInputChannel") MessageChannel inputChannel,
                                                              PubSubTemplate pubSubTemplate) {
         PubSubInboundChannelAdapter adapter =
-                new PubSubInboundChannelAdapter(pubSubTemplate, pubSubConfiguration.getSubscription()); //
+                new PubSubInboundChannelAdapter(pubSubTemplate, "demo-subs"); //pubSubConfiguration.getSubscription()
         adapter.setOutputChannel(inputChannel);
         adapter.setAckMode(AckMode.MANUAL);
         return adapter;
