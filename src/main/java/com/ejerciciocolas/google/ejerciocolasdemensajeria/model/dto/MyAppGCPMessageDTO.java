@@ -1,4 +1,4 @@
-package com.ejerciciocolas.google.ejerciocolasdemensajeria.controller;
+package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.*;
@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MyAppGCPMessage {
+public class MyAppGCPMessageDTO {
 
     private String id;
     private String name;

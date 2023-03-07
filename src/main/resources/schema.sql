@@ -1,29 +1,34 @@
-DROP TABLE IF EXISTS users;
 
-CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(250) NOT NULL,
-  last_name VARCHAR(250) NOT NULL,
-  email VARCHAR(250) NOT NULL
+--------------------Expertas----------------
+DROP TABLE IF EXISTS experts;
+
+CREATE TABLE experts (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-DROP TABLE IF EXISTS devices;
+DROP TABLE IF EXISTS experts_points;
 
-CREATE TABLE devices (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  OS VARCHAR(50) NOT NULL,
-  name VARCHAR(250) NOT NULL,
-  user_id INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+CREATE TABLE experts_points (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  last_points_entered BIGINT NOT NULL,
+  total_points BIGINT NOT NULL,
+
+  id_experts BIGINT REFERENCES experts(id)
 );
 
-DROP TABLE IF EXISTS subscriptions;
+DROP TABLE IF EXISTS operations_experts_log;
 
-CREATE TABLE subscriptions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  type VARCHAR(50) NOT NULL,
-  date_bought DATE NOT NULL,
-  date_cancelled DATE,
-  user_id INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+CREATE TABLE operations_experts_log (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  operation_type VARCHAR(250) NOT NULL,
+  amount_entered NUMERIC(10,2) NOT NULL,
+  operation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  id_experts BIGINT REFERENCES experts(id)
 );
+
+
+

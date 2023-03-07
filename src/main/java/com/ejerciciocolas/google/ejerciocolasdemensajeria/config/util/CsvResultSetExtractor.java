@@ -35,6 +35,12 @@ public class CsvResultSetExtractor implements ResultSetExtractor<Void> {
                             Date date = rs.getDate(col.getFirst());
                             value = date != null ? date.toLocalDate() : null;
                             break;
+                        case "TIMESTAMP":
+                            value = rs.getTimestamp(col.getFirst());
+                            break;
+                        /*case "INTEGER":
+                            value = rs.getInt(col.getFirst());
+                            break;¨*/
                         case "STRING":
                         default:
                             value = rs.getString(col.getFirst());
