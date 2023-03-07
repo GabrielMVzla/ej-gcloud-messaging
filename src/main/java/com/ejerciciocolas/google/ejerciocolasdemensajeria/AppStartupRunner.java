@@ -38,33 +38,9 @@ public class AppStartupRunner implements ApplicationRunner{
                                 "e.id, oel.operation_type, oel.amount_entered, ep.total_points, oel.operation_date\n" +
                             "FROM\n" +
                                 "experts e\n" +
-                            "INNER JOIN experts_points ep ON e.id = ep.id_experts\n" +
-                            "INNER JOIN operations_experts_log oel ON e.id = oel.id_experts\n";
+                            "INNER JOIN experts_points ep ON e.id = ep.id_expert\n" +
+                            "INNER JOIN operations_experts_log oel ON e.id = oel.id_expert\n";
 
         dataExtractorService.queryToBigQuery(sqlQuery, schema);
-
-        /**     TODO remover en próximo commit
-                String query = "SELECT subscriptionId, dateBought\n" +
-                        "FROM `gcp-pubsub-379420.ds_demo.tbl_demo`\n" +
-                        "LIMIT 1000";
-
-                QueryJobConfiguration queryConfig =
-                        QueryJobConfiguration.newBuilder(query).build();
-
-                TableResult result = bigQuery.query(queryConfig);
-
-                List<Map<String, Object>> rows = new ArrayList<>();
-                if(result.getTotalRows() != 0){
-                    result.getValues().forEach( fieldValues -> {
-                        Map<String, Object> row = new HashMap<>();
-                        log.info(fieldValues.get(0).getValue() + ", " + fieldValues.get(1).getValue()); // + ", " + fieldValues.get(2).getValue()
-                        row.put("subscriptionId", fieldValues.get(0).getValue());
-                        row.put("dateBought", fieldValues.get(1).getValue());
-                        //row.put("OS", fieldValues.get(2).getValue());
-                    });
-                } else {
-                    log.info("No hay info");
-                }
-         */
     }
 }

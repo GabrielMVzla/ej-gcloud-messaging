@@ -7,9 +7,6 @@ import com.google.cloud.bigquery.TableResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,7 +23,7 @@ public class BigQueryController {
     private final DataExtractorService dataExtractorService;
     private final BigQuery bigQuery;
 
-    @GetMapping("/info/{page}")
+    @GetMapping("/experts-info/{page}")
     public Page<Map<String, Object>> getExpertsInfoByBigQuery(@PathVariable Integer page) throws InterruptedException {
         return dataExtractorService.getExpertsDataByBigQuery(page);
     }

@@ -43,12 +43,16 @@ public class InboundConfiguration {
     @ServiceActivator(inputChannel = "pubsubInputChannel")
     public MessageHandler messageReceiver() {
         return message -> {
-            log.info("¤¤¤ Message arrived! Payload: " + new String((byte[]) message.getPayload()));
-//            log.info("headers {}", message.getHeaders());
+            String payload = new String((byte[]) message.getPayload());
+            log.info("¤¤¤ Message arrived! Payload: " + payload);
+            //log.info("headers {}", message.getHeaders());
+
             BasicAcknowledgeablePubsubMessage originalMessage =
                     message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE,
                             BasicAcknowledgeablePubsubMessage.class);
                 originalMessage.ack();
+
+
         };
     }
 }

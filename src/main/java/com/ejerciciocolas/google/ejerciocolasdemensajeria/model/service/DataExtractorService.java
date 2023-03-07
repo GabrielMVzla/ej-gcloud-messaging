@@ -1,11 +1,8 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.CsvResultSetExtractor;
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.connector.BigQueryConnector;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.connector.BigQueryConnector;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.BigQueryDAO;
-import com.google.cloud.bigquery.BigQuery;
-import com.google.cloud.bigquery.QueryJobConfiguration;
-import com.google.cloud.bigquery.TableResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
@@ -15,8 +12,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

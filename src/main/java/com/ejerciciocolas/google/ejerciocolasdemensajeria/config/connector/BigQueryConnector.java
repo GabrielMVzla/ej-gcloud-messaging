@@ -1,4 +1,4 @@
-package com.ejerciciocolas.google.ejerciocolasdemensajeria.connector;
+package com.ejerciciocolas.google.ejerciocolasdemensajeria.config.connector;
 
 import com.google.cloud.bigquery.*;
 import lombok.extern.slf4j.Slf4j;

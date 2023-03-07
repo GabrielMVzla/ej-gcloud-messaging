@@ -17,17 +17,17 @@ CREATE TABLE experts_points (
   last_points_entered BIGINT NOT NULL,
   total_points BIGINT NOT NULL,
 
-  id_experts BIGINT REFERENCES experts(id)
+  id_expert BIGINT REFERENCES experts(id)
 );
 
 DROP TABLE IF EXISTS operations_experts_log;
 
 CREATE TABLE operations_experts_log (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  operation_type VARCHAR(250) NOT NULL,
+  operation_type VARCHAR(20) NOT NULL,
   amount_entered NUMERIC(10,2) NOT NULL,
   operation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  id_experts BIGINT REFERENCES experts(id)
+  id_expert BIGINT REFERENCES experts(id)
 );
 
 

@@ -21,6 +21,9 @@ public class ProducerController {
     public String publishMessage(@RequestBody MyAppGCPMessageDTO message){
         log.info("Mensaje saliente {}", message.toString());
         gateway.sendToPubsub( message.toString() );
+
+        //id_expert, operation_type, amount_entered, total_points, operation_date
+
         return "Message sent to Google Pub/Sub Successfully";
     }
 }

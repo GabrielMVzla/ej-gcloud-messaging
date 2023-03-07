@@ -24,6 +24,7 @@ public class BigQueryDAO {
     private final BigQuery bigQuery;
     private QueryJobConfiguration queryConfig;
 
+    private long totalRows;
     @Value("${page_size.value}")
     private int PAGE_SIZE;
     //private static final String WHERE_PAGEABLE = "\nWHERE id > %s AND id <= %s";
@@ -33,7 +34,7 @@ public class BigQueryDAO {
 
     private String query;
 
-    private void setPageableQuery(String query, Pageable pageable){
+    private void setPageableQuery(String query, Pageable pageable) throws InterruptedException {
         this.query = query + LIMIT + OFFSET + SEMI_COLON;
 
         long offset = pageable.getOffset();
@@ -48,6 +49,8 @@ public class BigQueryDAO {
         queryConfig = QueryJobConfiguration
                 .newBuilder(this.query)
                 .build();
+
+        totalRows = bigQuery.query(queryConfig).getTotalRows();
 
         log.info(this.query);
     }
@@ -93,15 +96,14 @@ public class BigQueryDAO {
         }
         log.info("findAll sql: {}", query);
 
-        long total = countAll(); //result.getTotalRows()
+        long total = countAll();
 
         return new PageImpl<>(rows, pageable, total);
     }
 
     /*** Count all the rows.*/
     private long countAll() throws InterruptedException {
-        //log.info("countAll sql: {}", query);
-        return bigQuery.query(queryConfig).getTotalRows();
+        return totalRows;
     }
     /**
      * Actually do something with each row.
@@ -112,32 +114,3 @@ public class BigQueryDAO {
         log.info(row.toString());
     }
 }
-
-
-/**     TODO remover en próximo commit
- *
- *
- *     public Object getExpertsDataByBigQuery(String query, int page) throws InterruptedException {
- *
- *         QueryJobConfiguration queryConfig =
- *                 QueryJobConfiguration.newBuilder(query).build();
- *
- *         TableResult result = bigQuery.query(queryConfig);
- *
- *         List<Map<String, Object>> rows = new ArrayList<>();
- *         if (result.getTotalRows() != 0) {
- *             result.getValues().forEach(fieldValues -> {
- *
- *                 Map<String, Object> row = new HashMap<>();
- *                 log.info(fieldValues.get(0).getValue() + ", " + fieldValues.get(1).getValue()); // + ", " + fieldValues.get(2).getValue()
- *                 row.put("subscriptionId", fieldValues.get(0).getValue());
- *                 row.put("dateBought", fieldValues.get(1).getValue());
- *                 //row.put("OS", fieldValues.get(2).getValue());
- *             });
- *         } else {
- *             log.info("No hay info");
- *         }
- *         return rows;
- *     }
- *
- */
