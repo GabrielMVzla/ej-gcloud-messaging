@@ -3,54 +3,65 @@ package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.ExpertDAO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoFromBigQueryDTO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.Expert;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.ExpertPoint;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.OperationExpertLog;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
-//@AllArgsConstructor
+@AllArgsConstructor
 public class ExpertService {
 
-    @Autowired
-    private ExpertDAO expertDAO;
+    private final ExpertDAO expertDAO;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public List<ExpertInfoFromBigQueryDTO> getExpertInfoFromBigQuery(){
+    public List<ExpertInfoFromBigQueryDTO> getExpertInfoToSendBigQuery(){
 
-        /*Expert expert = Expert.builder()
-                .firstName("gabriel")
-                .lastName("montes")
-                .build();
-        expertDAO.save(expert);
         List<Expert> experts = expertDAO.findAll();
-        */
+        if(experts.isEmpty())
+            return Collections.emptyList();
 
-        Expert expert = expertDAO.findById(1L).orElse(null);
+        List<ExpertInfoFromBigQueryDTO> expertsInfo = new ArrayList<>();
+        Map<Long, List<OperationExpertLog>> mapOperationExpertLogs = new HashMap<>();
 
-        log.info("toString: {}", expert.toString() != null ? expert.toString() : null);
-        log.info("ExpertPoints: {}", expert.getExpertPoints());
-        log.info("OperationExpertLogs: {}", expert.getOperationExpertLogs());
+        for (Expert expert : experts) {
+            long id = expert.getId(); //id del expert
 
-        ExpertInfoFromBigQueryDTO expertInfoFromBigQueryDTO = ExpertInfoFromBigQueryDTO.builder()
-                .id( expert.getId() )
-                .operationType( expert.getOperationExpertLogs().get(0).getOperationType() )
-                .amountEntered( expert.getOperationExpertLogs().get(0).getAmountEntered() )
-                .totalPoints( expert.getExpertPoints().get(0).getTotalPoints() )
-                .operationDate( expert.getOperationExpertLogs().get(0).getOperationDate() )
-                .build();
+            if (expert.getOperationExpertLogs().isEmpty()) { //si no cuenta con operación, pasa a sig. iteración
+                continue;
+            }
 
-        log.info( "expertInfoFromBigQueryDTO: {}", expertInfoFromBigQueryDTO.toString() );
-         //experts.forEach(m -> System.out.println("Service " + m.toString()));
+            mapOperationExpertLogs.put(expert.getId(), expert.getOperationExpertLogs());
 
-        /*
-        List<ExpertInfoFromBigQueryDTO> expertsInfoFBQ = expertDAO.findExpertInfoFromBigQuery();
-        * */
-        return null;
+            if (!expert.getExpertPoints().isEmpty()) { //si es vacío quiere decir que aún no tiene puntos/movimientos
+                int sizeExp = expert.getExpertPoints().size() - 1;
+                ExpertPoint expertPoint = expert.getExpertPoints().get(sizeExp); //toma el último, es decir, para tomar cantidad actual
+
+                long totalPointsmapExpertPoints = expertPoint.getTotalPoints();
+
+                List<OperationExpertLog> tempListOpExpertsLog = mapOperationExpertLogs.get(id);
+                for (OperationExpertLog tempOpExpertsLog : tempListOpExpertsLog) { //for de map
+                    ExpertInfoFromBigQueryDTO expertInfo =
+                            ExpertInfoFromBigQueryDTO.builder()
+                                    .id(id)
+                                    .operationType(tempOpExpertsLog.getOperationType())
+                                    .amountEntered(tempOpExpertsLog.getAmountEntered())
+                                    .totalPoints(totalPointsmapExpertPoints)
+                                    .operationDate(tempOpExpertsLog.getOperationDate())
+                                    .build();
+
+                    expertsInfo.add(expertInfo);
+                }
+            }
+        }
+        expertsInfo.forEach(System.out::println);
+
+        return expertsInfo;
     }
 }
