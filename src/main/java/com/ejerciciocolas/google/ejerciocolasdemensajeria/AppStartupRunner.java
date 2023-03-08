@@ -23,6 +23,7 @@ public class AppStartupRunner implements ApplicationRunner{
 
    @Override
     public void run(ApplicationArguments args) throws Exception {
+       //Esquema que tomará nuestro CSV, coincide con tabla de data-set en gcloud BigQuery
         List<Pair<String, String>> schema = Arrays.asList(
                 Pair.of("id", "NUMERIC"),
                 Pair.of("operation_type", "STRING"),
@@ -31,14 +32,6 @@ public class AppStartupRunner implements ApplicationRunner{
                 Pair.of("operation_date", "TIMESTAMP")
         );
 
-        String sqlQuery = "SELECT\n" +
-                                "e.id, oel.operation_type, oel.amount_entered, ep.total_points, oel.operation_date\n" +
-                            "FROM\n" +
-                                "\"EXPERTS\" e\n" +
-                            "INNER JOIN experts_points ep ON e.id = ep.id_expert\n" +
-                            "INNER JOIN operations_experts_log oel ON e.id = oel.id_expert\n";
-
-        //dataExtractorService.queryToBigQuery(sqlQuery, schema);
-        dataExtractorService.queryToCSV(sqlQuery, schema);
+        dataExtractorService.queryToBigQuery( schema );
     }
 }

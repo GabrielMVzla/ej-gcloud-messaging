@@ -1,11 +1,10 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.CsvResultSetExtractor;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.CsvExtractor;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.connector.BigQueryConnector;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.BigQueryDAO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoFromBigQueryDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -13,12 +12,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,30 +25,17 @@ public class DataExtractorService {
     /**
      * Crea un archivo temporal con info de la base de datos <em><u>H2 en este proyecto</u></em> que pueda ser envíado a gcloud BigQuery
      *
-     * @param sqlQuery String
      * @param schema List&#60;Pair&#60;String, String>>
      * @return File
      * @throws IOException
      */
-    public File queryToCSV(String sqlQuery, List<Pair<String, String>> schema) throws IOException {
+    public File queryToCSV(List<Pair<String, String>> schema) throws IOException {
 
         File csvFile = Files.createTempFile("extract_data", ".csv").toFile();
 
-        List<ExpertInfoFromBigQueryDTO> experstInfoFromBigQuery = expertService.getExpertInfoFromBigQuery();
+        List<ExpertInfoFromBigQueryDTO> experstInfoFromBigQuery = expertService.getExpertInfoToSendBigQuery();
 
-        if(experstInfoFromBigQuery != null)
-            experstInfoFromBigQuery.forEach(System.out::println);
-        //ResultSet resultSet = jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<ExpertInfoFromBigQueryDTO>(ExpertInfoFromBigQueryDTO.class)) ;
-        /*(resultSet, i) -> {
-            return new ExpertInfoFromBigQueryDTO(
-                    resultSet.getLong("id"),
-                    resultSet.getString("operation_type"),
-                    resultSet.getDouble("amount_entered"),
-                    resultSet.getLong("total_points"),
-                    resultSet.getTimestamp("operation_date")
-            );
-        });*/
-        //jdbcTemplate.query(sqlQuery, new CsvResultSetExtractor(csvFile, schema));
+        new CsvExtractor(csvFile, experstInfoFromBigQuery, schema); //CsvExtractor csvExtractor =
 
         System.out.println(csvFile.getName());
         return csvFile;
@@ -63,13 +43,12 @@ public class DataExtractorService {
     /**
      * Envía la data seleccionada por la query dada a gcloud -> data-set -> tabla
      *
-     * @param sqlQuery String
      * @param schema List&#60;Pair&#60;String, String>>
      * @throws IOException
      */
-    public void queryToBigQuery(String sqlQuery, List<Pair<String, String>> schema) throws IOException {
+    public void queryToBigQuery(List<Pair<String, String>> schema) throws IOException {
 
-        File csvFile = this.queryToCSV(sqlQuery, schema);
+        File csvFile = this.queryToCSV( schema);
 
         bigQueryConnector.uploadToBigQuery(csvFile, "tbl_demo", true, schema);
     }
