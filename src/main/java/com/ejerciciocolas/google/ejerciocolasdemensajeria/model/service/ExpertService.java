@@ -1,7 +1,7 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.ExpertDAO;
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoFromBigQueryDTO;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoBigQueryDTO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.Expert;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.ExpertPoint;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.OperationExpertLog;
@@ -21,13 +21,13 @@ public class ExpertService {
     private final ExpertDAO expertDAO;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public List<ExpertInfoFromBigQueryDTO> getExpertInfoToSendBigQuery(){
+    public List<ExpertInfoBigQueryDTO> getExpertInfoToSendBigQuery(){
 
         List<Expert> experts = expertDAO.findAll();
         if(experts.isEmpty())
             return Collections.emptyList();
 
-        List<ExpertInfoFromBigQueryDTO> expertsInfo = new ArrayList<>();
+        List<ExpertInfoBigQueryDTO> expertsInfo = new ArrayList<>();
         Map<Long, List<OperationExpertLog>> mapOperationExpertLogs = new HashMap<>();
 
         for (Expert expert : experts) {
@@ -47,8 +47,8 @@ public class ExpertService {
 
                 List<OperationExpertLog> tempListOpExpertsLog = mapOperationExpertLogs.get(id);
                 for (OperationExpertLog tempOpExpertsLog : tempListOpExpertsLog) { //for de map
-                    ExpertInfoFromBigQueryDTO expertInfo =
-                            ExpertInfoFromBigQueryDTO.builder()
+                    ExpertInfoBigQueryDTO expertInfo =
+                            ExpertInfoBigQueryDTO.builder()
                                     .id(id)
                                     .operationType(tempOpExpertsLog.getOperationType())
                                     .amountEntered(tempOpExpertsLog.getAmountEntered())
@@ -60,7 +60,6 @@ public class ExpertService {
                 }
             }
         }
-        expertsInfo.forEach(System.out::println);
 
         return expertsInfo;
     }

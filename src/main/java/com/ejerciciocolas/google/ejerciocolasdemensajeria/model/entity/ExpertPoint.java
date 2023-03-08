@@ -21,13 +21,17 @@ public class ExpertPoint implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonAlias("last_amount_entered")
+    @Column(name = "last_amount_entered")
+    private double lastAmountEntered;
+
     @JsonAlias("last_points_entered")
     @Column(name = "last_points_entered")
-    private Long lastPointsEntered;
+    private long lastPointsEntered;
 
     @JsonAlias("total_points")
     @Column(name = "total_points")
-    private Long totalPoints;
+    private long totalPoints;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)

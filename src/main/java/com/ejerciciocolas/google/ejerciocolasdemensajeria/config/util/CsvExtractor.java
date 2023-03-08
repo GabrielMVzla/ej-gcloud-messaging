@@ -1,16 +1,14 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util;
 
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoFromBigQueryDTO;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoBigQueryDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.util.Pair;
 
 import java.io.*;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class CsvExtractor
@@ -22,7 +20,7 @@ public class CsvExtractor
      * @param experstInfoFromBigQuery - info a guardar
      * @param columns - schema
      */
-    public CsvExtractor(File file, List<ExpertInfoFromBigQueryDTO> experstInfoFromBigQuery, List<Pair<String, String>> columns){
+    public CsvExtractor(File file, List<ExpertInfoBigQueryDTO> experstInfoFromBigQuery, List<Pair<String, String>> columns){
         try {
             FileWriter out = new FileWriter(file);
             CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT);
@@ -30,7 +28,7 @@ public class CsvExtractor
             int cont = -1;
             while (++cont < experstInfoFromBigQuery.size()) {
                 List<Object> values = new ArrayList<>();
-                ExpertInfoFromBigQueryDTO expertInfo = experstInfoFromBigQuery.get(cont);
+                ExpertInfoBigQueryDTO expertInfo = experstInfoFromBigQuery.get(cont);
 
                 //remueve nombre de clase y paréntesis, así como el atributo, es decir, deja solo el resultado
                 String[] arrayExpertInfo = expertInfo.toString()
@@ -51,35 +49,3 @@ public class CsvExtractor
         }
     }
 }
-     /* TODO eliminar en sig. commit
-     switch (col.getSecond()) {
-                        case "NUMERIC":
-                            value = expertInfo.getId(); //id Long
-                            break;
-                        case "DATETIME":
-                            value = expertInfo.getOperationDate(); //id DATETIME
-
-                            break;
-                        case "DATE":
-                            Date date = rs.getDate(col.getFirst());
-                            value = expertInfo.get(); //id Long
-
-                            value = date != null ? date.toLocalDate() : null;
-                            break;
-                        case "TIMESTAMP":
-                            value = rs.getTimestamp(col.getFirst());
-                            value = expertInfo.getId(); //id Long
-
-                            break;
-                        case "FLOAT":
-                            value = rs.getDouble(col.getFirst());
-                            value = expertInfo.getId(); //id Long
-
-                            break;
-                        case "STRING":
-                        default:
-                            value = rs.getString(col.getFirst());
-                            value = expertInfo.getId(); //id Long
-
-                            break;
-                    }*/

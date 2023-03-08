@@ -1,9 +1,8 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.controller;
 
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoFromBigQueryDTO;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoBigQueryDTO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service.DataExtractorService;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service.ExpertService;
-import com.google.cloud.bigquery.BigQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,6 @@ public class BigQueryController {
 
     private final DataExtractorService dataExtractorService;
     private final ExpertService expertService;
-    private final BigQuery bigQuery;
 
     @GetMapping("/experts-info-bq/{page}")
     public Page<Map<String, Object>> getExpertsInfoByBigQuery(@PathVariable Integer page) throws InterruptedException {
@@ -28,7 +26,7 @@ public class BigQueryController {
     }
 
     @GetMapping("/experts-info")
-    public List<ExpertInfoFromBigQueryDTO> getExpertInfoFromBigQuery() {
+    public List<ExpertInfoBigQueryDTO> getExpertInfoFromBigQuery() {
         return expertService.getExpertInfoToSendBigQuery();
     }
 }

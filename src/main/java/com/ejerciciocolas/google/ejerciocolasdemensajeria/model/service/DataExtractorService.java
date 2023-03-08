@@ -3,7 +3,7 @@ package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.CsvExtractor;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.connector.BigQueryConnector;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.BigQueryDAO;
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoFromBigQueryDTO;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoBigQueryDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
@@ -33,7 +33,7 @@ public class DataExtractorService {
 
         File csvFile = Files.createTempFile("extract_data", ".csv").toFile();
 
-        List<ExpertInfoFromBigQueryDTO> experstInfoFromBigQuery = expertService.getExpertInfoToSendBigQuery();
+        List<ExpertInfoBigQueryDTO> experstInfoFromBigQuery = expertService.getExpertInfoToSendBigQuery();
 
         new CsvExtractor(csvFile, experstInfoFromBigQuery, schema); //CsvExtractor csvExtractor =
 

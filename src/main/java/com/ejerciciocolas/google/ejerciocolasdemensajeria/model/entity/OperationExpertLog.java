@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,10 +31,12 @@ public class OperationExpertLog implements Serializable {
 
     @JsonAlias("amount_entered")
     @Column(name = "amount_entered")
-    private Float amountEntered;
+    private double amountEntered;
 
     @JsonProperty(required = false)
     @JoinColumn(name = "operation_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     private LocalDateTime operationDate;
 
     @JsonBackReference

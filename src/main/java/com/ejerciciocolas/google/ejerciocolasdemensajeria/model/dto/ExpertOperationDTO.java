@@ -1,10 +1,7 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Builder
 @NoArgsConstructor
@@ -12,11 +9,15 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class ExpertInfoFromBigQueryDTO
-{
-    private long id;
+public class ExpertOperationDTO {
+
+    @JsonAlias("id_expert")
+    private long idExpert;
+
+    @JsonAlias("operation_type")
     private String operationType;
+
+    @JsonAlias("amount_entered")
     private double amountEntered;
-    private long totalPoints;
-    private LocalDateTime operationDate;
+
 }

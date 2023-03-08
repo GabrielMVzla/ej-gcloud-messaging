@@ -37,9 +37,9 @@ INSERT INTO experts (first_name, last_name) VALUES('Amber', 'Grim');
 INSERT INTO experts (first_name, last_name) VALUES('Antonio', 'Luffman');
 INSERT INTO experts (first_name, last_name) VALUES('Erma', 'Antwis');
 
-INSERT INTO experts_points (last_points_entered, total_points, id_expert) VALUES(50, 500, 1);
-INSERT INTO experts_points (last_points_entered, total_points, id_expert) VALUES(60, 560, 3);
-INSERT INTO experts_points (last_points_entered, total_points, id_expert) VALUES(10, 200, 2);
+INSERT INTO experts_points (last_points_entered, last_amount_entered, total_points, id_expert) VALUES(50, 5000.00, 500, 1);
+INSERT INTO experts_points (last_points_entered, last_amount_entered, total_points, id_expert) VALUES(60, 1000.00, 560, 3);
+INSERT INTO experts_points (last_points_entered, last_amount_entered, total_points, id_expert) VALUES(10, 6000.00, 200, 2);
 
 INSERT INTO operations_experts_log (operation_type, amount_entered, operation_date, id_expert) VALUES('COLOCACI\u00D3N', 45000.00, '2022-08-23 12:00:00', 1);
 INSERT INTO operations_experts_log (operation_type, amount_entered, operation_date, id_expert) VALUES('ABONO', 5000.00, '2022-08-23 12:00:00', 1);
