@@ -1,24 +1,24 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-//@Entity
-@Table(name="experts_points")
+@Entity
+@Table(name="operations_experts_log")
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @Builder
+@Cacheable(false)
 public class OperationExpertLog implements Serializable {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,18 +26,23 @@ public class OperationExpertLog implements Serializable {
 
     @JsonAlias("operation_type")
     @Column(name = "operation_type")
-    private Long operationType;
+    private String operationType;
 
     @JsonAlias("amount_entered")
     @Column(name = "amount_entered")
     private Float amountEntered;
 
     @JsonProperty(required = false)
-    @JoinColumn(name = "operation_date", insertable = false, updatable = false)
-    private Timestamp operationDate;
+    @JoinColumn(name = "operation_date")
+    private LocalDateTime operationDate;
 
-    @JsonAlias("id_expert")
+    @JsonBackReference
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_expert")
-    //@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Long idExpert;
+    private Expert expert;
+
+    public OperationExpertLog(){
+        operationDate = LocalDateTime.now();
+    }
 }

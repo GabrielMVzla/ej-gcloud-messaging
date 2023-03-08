@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.util.Pair;
-import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.io.*;
 import java.sql.*;
@@ -12,13 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class CsvResultSetExtractor implements ResultSetExtractor<Void> {
-
+public class CsvResultSetExtractor //implements ResultSetExtractor<Void> {
+{
     private final File file;
     private final List<Pair<String, String>> columns;
 
-    @Override
+ //   @Override
     public Void extractData(final ResultSet rs) {
+
         try {
             FileWriter out = new FileWriter(file);
             CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT);
@@ -31,6 +31,9 @@ public class CsvResultSetExtractor implements ResultSetExtractor<Void> {
                         case "NUMERIC":
                             value = rs.getLong(col.getFirst());
                             break;
+                        case "DATETIME":
+                            value = rs.getDate(col.getFirst());
+                            break;
                         case "DATE":
                             Date date = rs.getDate(col.getFirst());
                             value = date != null ? date.toLocalDate() : null;
@@ -38,9 +41,9 @@ public class CsvResultSetExtractor implements ResultSetExtractor<Void> {
                         case "TIMESTAMP":
                             value = rs.getTimestamp(col.getFirst());
                             break;
-                        /*case "INTEGER":
-                            value = rs.getInt(col.getFirst());
-                            break;¨*/
+                        case "FLOAT":
+                            value = rs.getDouble(col.getFirst());
+                            break;
                         case "STRING":
                         default:
                             value = rs.getString(col.getFirst());

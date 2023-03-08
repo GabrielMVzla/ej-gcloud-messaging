@@ -21,10 +21,7 @@ public class AppStartupRunner implements ApplicationRunner{
 
     private final DataExtractorService dataExtractorService;
 
-    @Autowired
-    private BigQuery bigQuery;
-
-    @Override
+   @Override
     public void run(ApplicationArguments args) throws Exception {
         List<Pair<String, String>> schema = Arrays.asList(
                 Pair.of("id", "NUMERIC"),
@@ -37,10 +34,11 @@ public class AppStartupRunner implements ApplicationRunner{
         String sqlQuery = "SELECT\n" +
                                 "e.id, oel.operation_type, oel.amount_entered, ep.total_points, oel.operation_date\n" +
                             "FROM\n" +
-                                "experts e\n" +
+                                "\"EXPERTS\" e\n" +
                             "INNER JOIN experts_points ep ON e.id = ep.id_expert\n" +
                             "INNER JOIN operations_experts_log oel ON e.id = oel.id_expert\n";
 
-        dataExtractorService.queryToBigQuery(sqlQuery, schema);
+        //dataExtractorService.queryToBigQuery(sqlQuery, schema);
+        dataExtractorService.queryToCSV(sqlQuery, schema);
     }
 }
