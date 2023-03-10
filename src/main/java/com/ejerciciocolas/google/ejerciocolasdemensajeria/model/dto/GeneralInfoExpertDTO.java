@@ -10,12 +10,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class ExpertInfoBigQueryDTO
-{
-    private long id;
-    private String operationType;
-    private double amountEntered;
+public class GeneralInfoExpertDTO {
+
+    private long idExpert;
+    private String firstName;
+    private String lastName;
+
     private long pointsOperation;
     private long totalPoints;
+
+    private String operationType;
+    private double amountEntered;
     private LocalDateTime operationDate;
+
 }

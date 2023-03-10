@@ -1,6 +1,7 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -19,7 +20,6 @@ import java.util.Set;
 @Setter
 @ToString
 @Builder
-
 public class Expert implements Serializable {
 
     @Id
@@ -35,12 +35,15 @@ public class Expert implements Serializable {
     private String lastName;
 
     @ToString.Exclude
+    //@JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="expert")
     private List<OperationExpertLog> operationExpertLogs;
 
+    //@JsonManagedReference
     @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="expert")
-    private List<ExpertPoint> expertPoints;
+    //@JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL, mappedBy="expert")
+    private ExpertPoint expertPoints;
 
     /*@JsonProperty(required = false)
     @Column(name = "created_at", insertable = false, updatable = false)

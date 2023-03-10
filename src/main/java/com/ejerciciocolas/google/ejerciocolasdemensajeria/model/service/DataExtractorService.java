@@ -1,5 +1,6 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.ConstantsUtil;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.CsvExtractor;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.connector.BigQueryConnector;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.BigQueryDAO;
@@ -33,7 +34,8 @@ public class DataExtractorService {
 
         File csvFile = Files.createTempFile("extract_data", ".csv").toFile();
 
-        List<ExpertInfoBigQueryDTO> experstInfoFromBigQuery = expertService.getExpertInfoToSendBigQuery();
+        List<ExpertInfoBigQueryDTO> experstInfoFromBigQuery =
+                expertService.getExpertInfoToSendBigQuery();
 
         new CsvExtractor(csvFile, experstInfoFromBigQuery, schema); //CsvExtractor csvExtractor =
 
@@ -50,7 +52,7 @@ public class DataExtractorService {
 
         File csvFile = this.queryToCSV( schema);
 
-        bigQueryConnector.uploadToBigQuery(csvFile, "tbl_demo", true, schema);
+        bigQueryConnector.uploadToBigQuery(csvFile, ConstantsUtil.TABLE_DATA_SET, true, schema);
     }
 
     /**

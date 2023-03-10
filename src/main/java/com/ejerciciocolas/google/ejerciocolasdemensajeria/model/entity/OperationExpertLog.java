@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="operations_experts_log")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -33,19 +34,21 @@ public class OperationExpertLog implements Serializable {
     @Column(name = "amount_entered")
     private double amountEntered;
 
+    @JsonAlias("points_generated")
+    @Column(name = "points_generated")
+    private long pointsGenerated;
+
     @JsonProperty(required = false)
     @JoinColumn(name = "operation_date")
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
     private LocalDateTime operationDate;
 
-    @JsonBackReference
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "id_expert")
     private Expert expert;
 
-    public OperationExpertLog(){
+    @PrePersist
+    public void saveDate(){
         operationDate = LocalDateTime.now();
     }
 }

@@ -1,7 +1,9 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,8 +20,11 @@ import java.io.Serializable;
 public class ExpertPoint implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @JsonAlias("last_operation")
+    @Column(name = "last_operation")
+    private String lastOperation;
 
     @JsonAlias("last_amount_entered")
     @Column(name = "last_amount_entered")
@@ -34,7 +39,7 @@ public class ExpertPoint implements Serializable {
     private long totalPoints;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(name = "id_expert")
     private Expert expert;
 }

@@ -22,22 +22,20 @@ public class ProducerController {
     @Autowired private OutboundConfiguration.PubsubOutboundGateway gateway;
     @Autowired private OperationExpertLogService operationExpertLogService;
 
-    //private PubSubConfigurationCustom.PubsubOutboudGateway gateway;
     @PostMapping("/publish")
     public String publishMessage(@RequestBody MyAppGCPMessageDTO message){
         log.info("Mensaje saliente {}", message.toString());
         gateway.sendToPubsub( message.toString() );
-
-        //id_expert, operation_type, amount_entered, total_points, operation_date
 
         return "Message sent to Google Pub/Sub Successfully";
     }
 
     @PostMapping("/publish-expert-operation")
     public String publishExpertOperation(@RequestBody ExpertOperationDTO expertOperationDTO){
+        log.info("Mensaje saliente {}", expertOperationDTO.toString());
 
-        operationExpertLogService.saveExpertInfoOperationDBAndBQ(expertOperationDTO);
+        gateway.sendToPubsub( expertOperationDTO.toString() );
 
-        return null;
+        return "Se envío el movimiento del expert@ a bigQuery";
     }
 }

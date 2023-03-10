@@ -8,6 +8,7 @@ import org.springframework.data.util.Pair;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -31,10 +32,9 @@ public class CsvExtractor
                 ExpertInfoBigQueryDTO expertInfo = experstInfoFromBigQuery.get(cont);
 
                 //remueve nombre de clase y paréntesis, así como el atributo, es decir, deja solo el resultado
-                String[] arrayExpertInfo = expertInfo.toString()
-                        .replaceAll(".*[(](.*)[)]", "$1")
-                        .replaceAll("(\\w*=)+", "")
-                        .split(",");
+                String[] arrayExpertInfo = AttributesToStringToArrayUtil.AttributesToStringToArray(expertInfo.toString());
+
+                //Arrays.asList(arrayExpertInfo).forEach(System.out::println);
 
                 Object value;
                 for (String expInf: arrayExpertInfo ) {
