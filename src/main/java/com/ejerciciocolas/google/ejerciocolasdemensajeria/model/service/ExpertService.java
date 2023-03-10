@@ -28,20 +28,19 @@ public class ExpertService {
 
     public List<ExpertInfoBigQueryDTO> getListExpertInfoToSendBigQuery(){
 
-        //TODO add nuevo atributo amucumulatedResidual
-
         List<GeneralInfoExpertDTO> generalInfoExpertDTOs = this.getListGeneralInfoExpert();
         List<ExpertInfoBigQueryDTO> expertInfoBigQueryDTOS = new ArrayList<>();
 
         generalInfoExpertDTOs.forEach( gieDTO -> {
             ExpertInfoBigQueryDTO expertInfo =
                     ExpertInfoBigQueryDTO.builder()
-                            .id(gieDTO.getIdExpert())
-                            .operationType(gieDTO.getOperationType())
-                            .amountEntered(gieDTO.getAmountEntered())
-                            .pointsOperation(gieDTO.getPointsOperation() )
-                            .totalPoints(gieDTO.getTotalPoints())
-                            .operationDate(gieDTO.getOperationDate())
+                            .id( gieDTO.getIdExpert() )
+                            .operationType( gieDTO.getOperationType() )
+                            .amountEntered( gieDTO.getAmountEntered() )
+                            .pointsOperation( gieDTO.getPointsOperation() )
+                            .acumulatedResidual( gieDTO.getAcumulatedResidual() )
+                            .totalPoints( gieDTO.getTotalPoints() )
+                            .operationDate( gieDTO.getOperationDate() )
                             .build();
 
             expertInfoBigQueryDTOS.add(expertInfo);
@@ -51,7 +50,6 @@ public class ExpertService {
     }
 
     public List<GeneralInfoExpertDTO> getListGeneralInfoExpert() {
-        //TODO add nuevo atributo amucumulatedResidual
 
         List<Expert> experts = expertDAO.findAll();
 
@@ -61,6 +59,7 @@ public class ExpertService {
         List<GeneralInfoExpertDTO> generalInfoExpertDTOs = new ArrayList<>();
         Map<Long, List<OperationExpertLog>> mapOperationExpertLogs = new HashMap<>();
         long expertTotalPoint = 0;
+        long acumulatedResidualPoints = 0;
 
         for (Expert expert : experts) {
             long idExpert = expert.getId(); //id del expert
@@ -71,6 +70,7 @@ public class ExpertService {
             ExpertPoint expertPoint = expertPointDAO.findById(idExpert).orElse(null);
             if(expertPoint != null) {
                 expertTotalPoint = expertPoint.getTotalPoints();
+                acumulatedResidualPoints = expertPoint.getAcumulatedResidual();
             }
 
             mapOperationExpertLogs.put(expert.getId(), expert.getOperationExpertLogs());
@@ -84,10 +84,11 @@ public class ExpertService {
                                 .idExpert( idExpert )
                                 .firstName( expert.getFirstName() )
                                 .lastName( expert.getLastName() )
-                                .pointsOperation( tempOpExpertsLog.getPointsGenerated() )
-                                .totalPoints( expertTotalPoint )
                                 .operationType( tempOpExpertsLog.getOperationType() )
                                 .amountEntered( tempOpExpertsLog.getAmountEntered() )
+                                .pointsOperation( tempOpExpertsLog.getPointsGenerated() )
+                                .acumulatedResidual( acumulatedResidualPoints )
+                                .totalPoints( expertTotalPoint )
                                 .operationDate( tempOpExpertsLog.getOperationDate() )
                                 .build();
 

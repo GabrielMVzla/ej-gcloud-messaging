@@ -16,6 +16,7 @@ public class ConstantsUtil {
             Pair.of("operation_type", "STRING"),
             Pair.of("amount_entered", "NUMERIC"),
             Pair.of("points_operation", "NUMERIC"),
+            Pair.of("acumulated_residual_points", "NUMERIC"),
             Pair.of("total_points", "NUMERIC"),
             Pair.of("operation_date", "TIMESTAMP")
     );

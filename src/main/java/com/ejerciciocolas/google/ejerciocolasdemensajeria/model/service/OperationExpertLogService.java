@@ -34,7 +34,8 @@ public class OperationExpertLogService {
     private final ExpertPointDAO expertPointDAO;
     private final OperationExpertLogDAO operationExpertLogDAO;
     private final DataExtractorService dataExtractorService;
-    private final static String PERFORMED_OPERATION = "ABONO";
+    private static final String OPERATION_PERFORMED = "ABONO";
+    private static final int POINTS_FLAG = 100;
 
     /**
      * Guarda información de operación realizada en tabla <u>operations_experts_log</u> y retorna información específica para guardar en BigQuery
@@ -54,8 +55,9 @@ public class OperationExpertLogService {
         long expertId = expertOperationDTO.getIdExpert();
         String operation = expertOperationDTO.getOperationType(); //.replace("\\u00D3", "Ó");
         double amountEntered = expertOperationDTO.getAmountEntered();
-        int multiplicadorBono = PERFORMED_OPERATION.equals(operation) ? 2 : 1;
-        long initialCalcPoints = (long) (amountEntered * multiplicadorBono) / 100;
+        int multiplicadorBono = OPERATION_PERFORMED.equals(operation) ? 2 : 1;
+        long initialCalcPoints = (long) (amountEntered * multiplicadorBono) / POINTS_FLAG;
+        long finalAcumulatedResidualPoints = initialCalcPoints % POINTS_FLAG;
 
         //por si nunca ha realizado una operación, se va a realizar esta acción, en lugar de consultar puntos anteriores para realizar operación en base a ello
         ExpertPoint expertPoint = ExpertPoint.builder()
@@ -63,6 +65,7 @@ public class OperationExpertLogService {
                 .lastOperation( "COLOCACI\\u00D3N" )
                 .lastPointsEntered( initialCalcPoints )
                 .lastAmountEntered( amountEntered )
+                .acumulatedResidual( finalAcumulatedResidualPoints )
                 .totalPoints( initialCalcPoints )
                 .expert(expert)
                 .build();
@@ -71,33 +74,30 @@ public class OperationExpertLogService {
         long finalTotalPointsExpert = initialCalcPoints;
         //Datos actuales de los puntos de nuestr@ expert@
         if (expert.getExpertPoints() != null) {
-            //TODO crear nuevo campo que almacene los puntos residuales para que sean utilizados en el futuro
-            //TODO add nuevo atributo amucumulatedResidual
 
-            //TODO remover esto x nuevo campo amucumulatedResidual***/
-                long lastAmountEntered = (long) expert.getExpertPoints().getLastAmountEntered();
-                long lastResidualAmount = lastAmountEntered % 100;
+            long lastAcumulatedResidualPoints = expert.getExpertPoints().getAcumulatedResidual();
+
             log.info("cada 100 pesos ingresados es un punto, si no se llega al punto, el residual se acumula para la próxima!");
 
             String lastOperation = expert.getExpertPoints().getLastOperation().toUpperCase();
 
             //si operación anterior no es ABONO y la actual SÍ, entonces se divide entre 2 solo la anterior, ya que más adelante hay una operación de multiplicar x 2 x el bono actual con el residual, entonces,
             // los puntos anteriores generados quedan con el valor inicial + los nuevos con su bonificación, ya que no se debe realizar de nuevo el bono pq ya se ha realizado anteriormente la operación de bono
-            if(!PERFORMED_OPERATION.equals( lastOperation ) && PERFORMED_OPERATION.equals( operation ) && lastResidualAmount != 0){
-                lastResidualAmount = (long) Math.ceil(( (double) lastResidualAmount / 2));
+            if(!OPERATION_PERFORMED.equals( lastOperation ) && OPERATION_PERFORMED.equals( operation ) && lastAcumulatedResidualPoints != 0){
+                lastAcumulatedResidualPoints = (long) Math.ceil(( (double) lastAcumulatedResidualPoints / 2));
             }
-            long calcPointsEnteredAndResidual =  (long) ((amountEntered + lastResidualAmount)   * multiplicadorBono);
+            long calcPointsEnteredAndResidual =  (long) ((amountEntered + lastAcumulatedResidualPoints)   * multiplicadorBono);
 
 
-            //TODO corregir que si ya se tomaron los puntos para completar un punto extra, no volver a utilizarlos para el siguiente
-            long pointsFromAmountEntered = (long) (amountEntered * multiplicadorBono) / 100;
-            long pointsFromAmountEnteredAndResidual = (calcPointsEnteredAndResidual) / 100;
+            long pointsFromAmountEntered = (long) (amountEntered * multiplicadorBono) / POINTS_FLAG;
+            long pointsFromAmountEnteredAndResidual = (calcPointsEnteredAndResidual) / POINTS_FLAG;
             if(pointsFromAmountEnteredAndResidual > pointsFromAmountEntered){
             //solo se podría generar 1 punto debido a las reglas del negocio con los cálculos establecidos
                 log.info("Un punto generado x acumulación anterior!!!");
             }
 
-            finalResultGeneratedPoints = calcPointsEnteredAndResidual / 100;
+            finalAcumulatedResidualPoints = calcPointsEnteredAndResidual % 100;
+            finalResultGeneratedPoints = pointsFromAmountEnteredAndResidual;
 
             long totalPointsExpert = expert.getExpertPoints().getTotalPoints();
             finalTotalPointsExpert = totalPointsExpert + finalResultGeneratedPoints;
@@ -107,6 +107,7 @@ public class OperationExpertLogService {
                     .lastOperation( operation )
                     .lastPointsEntered( finalResultGeneratedPoints )
                     .lastAmountEntered( amountEntered )
+                    .acumulatedResidual( finalAcumulatedResidualPoints )
                     .totalPoints( finalTotalPointsExpert )
                     .expert( expert )
                     .build();
@@ -132,6 +133,7 @@ public class OperationExpertLogService {
                         .operationType( operation )
                         .amountEntered( amountEntered )
                         .pointsOperation( finalResultGeneratedPoints )
+                        .acumulatedResidual( finalAcumulatedResidualPoints )
                         .totalPoints( finalTotalPointsExpert )
                         .operationDate( savedOperationExpertLog.getOperationDate() )
                         .build();

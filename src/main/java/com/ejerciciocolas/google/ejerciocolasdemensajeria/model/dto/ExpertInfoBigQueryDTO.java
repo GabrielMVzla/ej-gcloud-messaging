@@ -16,7 +16,7 @@ public class ExpertInfoBigQueryDTO
     private String operationType;
     private double amountEntered;
     private long pointsOperation;
+    private long acumulatedResidual;
     private long totalPoints;
-    //TODO add nuevo atributo amucumulatedResidual
     private LocalDateTime operationDate;
 }

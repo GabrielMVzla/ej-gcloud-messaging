@@ -15,12 +15,14 @@ public class GeneralInfoExpertDTO {
     private long idExpert;
     private String firstName;
     private String lastName;
+    private String operationType;
 
+    private double amountEntered;
     private long pointsOperation;
+    private long acumulatedResidual;
+
     private long totalPoints;
 
-    private String operationType;
-    private double amountEntered;
     private LocalDateTime operationDate;
 
 }
