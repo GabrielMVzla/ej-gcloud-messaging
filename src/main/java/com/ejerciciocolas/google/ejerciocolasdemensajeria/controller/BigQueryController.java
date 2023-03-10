@@ -27,6 +27,6 @@ public class BigQueryController {
 
     @GetMapping("/experts-info")
     public List<ExpertInfoBigQueryDTO> getExpertInfoFromBigQuery() {
-        return expertService.getExpertInfoToSendBigQuery();
+        return expertService.getListExpertInfoToSendBigQuery();
     }
 }

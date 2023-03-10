@@ -30,6 +30,8 @@ import java.util.Arrays;
 public class InboundConfiguration {
 
     //private final PubSubConfiguration pubSubConfiguration;
+    @Autowired
+    private OperationExpertLogService operationExpertLogService;
 
     @Bean
     public PubSubInboundChannelAdapter messageChannelAdapter(@Qualifier("pubsubInputChannel") MessageChannel inputChannel,
@@ -46,28 +48,27 @@ public class InboundConfiguration {
         return new DirectChannel();
     }
 
-    @Autowired
-    private OperationExpertLogService operationExpertLogService;
-
     @Bean
     @ServiceActivator(inputChannel = "pubsubInputChannel")
     public MessageHandler messageReceiver() {
         return message -> {
             String payload = new String((byte[]) message.getPayload());
 
-            //Operacion del experto en divido en arreglo
-            String[] arrayExpOperations = AttributesToStringToArrayUtil.AttributesToStringToArray(payload);
-            int count = 0;
-            ExpertOperationDTO expertOperationDTO = ExpertOperationDTO.builder()
-                    .idExpert( Long.parseLong( arrayExpOperations[count++]) )
-                    .operationType(arrayExpOperations[count++])
-                    .amountEntered( Double.parseDouble( arrayExpOperations[count] ))
-                    .build();
-
             log.info("¤¤¤ Message arrived! Payload: " + payload);
             try {
-                if(expertOperationDTO != null){
-                    operationExpertLogService.saveExpertInfoOperationDBAndBQ(expertOperationDTO);
+                if(payload != null ){
+                    if(payload.isEmpty()){
+                        operationExpertLogService.saveListExpertOperationsDBAndBQ();
+                    } else {
+                        String[] arrayExpOperations = AttributesToStringToArrayUtil.AttributesToStringToArray(payload);
+                        int count = 0;
+                        ExpertOperationDTO expertOperationDTO = ExpertOperationDTO.builder()
+                                .idExpert( Long.parseLong( arrayExpOperations[count++]) )
+                                .operationType(arrayExpOperations[count++])
+                                .amountEntered( Double.parseDouble( arrayExpOperations[count] ))
+                                .build();
+                        operationExpertLogService.saveExpertOperationDBAndBQ(expertOperationDTO);
+                    }
                 }
             } catch (IOException e) {
                 log.info("Message: {}, Cause: {}", e.getMessage(), e.getCause());

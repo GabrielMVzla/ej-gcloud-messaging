@@ -30,6 +30,13 @@ public class ProducerController {
         return "Message sent to Google Pub/Sub Successfully";
     }
 
+    @PostMapping("/publish-all-experts-operations")
+    public String publishAllExpertsOperations(){
+        gateway.sendToPubsub( "" );
+
+        return "Se enviaron los movimientos de las/los expert@s a bigQuery";
+    }
+
     @PostMapping("/publish-expert-operation")
     public String publishExpertOperation(@RequestBody ExpertOperationDTO expertOperationDTO){
         log.info("Mensaje saliente {}", expertOperationDTO.toString());

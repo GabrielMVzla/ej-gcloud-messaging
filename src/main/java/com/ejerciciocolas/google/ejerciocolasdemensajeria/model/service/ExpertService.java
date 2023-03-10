@@ -24,10 +24,13 @@ import java.util.*;
 public class ExpertService {
 
     private final ExpertDAO expertDAO;
+    private final ExpertPointDAO expertPointDAO;
 
-    public List<ExpertInfoBigQueryDTO> getExpertInfoToSendBigQuery(){
+    public List<ExpertInfoBigQueryDTO> getListExpertInfoToSendBigQuery(){
 
-        List<GeneralInfoExpertDTO> generalInfoExpertDTOs = this.getGeneralInfoExpert();
+        //TODO add nuevo atributo amucumulatedResidual
+
+        List<GeneralInfoExpertDTO> generalInfoExpertDTOs = this.getListGeneralInfoExpert();
         List<ExpertInfoBigQueryDTO> expertInfoBigQueryDTOS = new ArrayList<>();
 
         generalInfoExpertDTOs.forEach( gieDTO -> {
@@ -47,7 +50,9 @@ public class ExpertService {
         return expertInfoBigQueryDTOS;
     }
 
-    public List<GeneralInfoExpertDTO> getGeneralInfoExpert() {
+    public List<GeneralInfoExpertDTO> getListGeneralInfoExpert() {
+        //TODO add nuevo atributo amucumulatedResidual
+
         List<Expert> experts = expertDAO.findAll();
 
         if(experts.isEmpty())
@@ -55,6 +60,7 @@ public class ExpertService {
 
         List<GeneralInfoExpertDTO> generalInfoExpertDTOs = new ArrayList<>();
         Map<Long, List<OperationExpertLog>> mapOperationExpertLogs = new HashMap<>();
+        long expertTotalPoint = 0;
 
         for (Expert expert : experts) {
             long idExpert = expert.getId(); //id del expert
@@ -62,6 +68,11 @@ public class ExpertService {
             if (expert.getOperationExpertLogs().isEmpty()) { //si no cuenta con operación, pasa a sig. iteración
                 continue;
             }
+            ExpertPoint expertPoint = expertPointDAO.findById(idExpert).orElse(null);
+            if(expertPoint != null) {
+                expertTotalPoint = expertPoint.getTotalPoints();
+            }
+
             mapOperationExpertLogs.put(expert.getId(), expert.getOperationExpertLogs());
 
             List<OperationExpertLog> tempListOpExpertsLog = mapOperationExpertLogs.get(idExpert);
@@ -74,7 +85,7 @@ public class ExpertService {
                                 .firstName( expert.getFirstName() )
                                 .lastName( expert.getLastName() )
                                 .pointsOperation( tempOpExpertsLog.getPointsGenerated() )
-                                .totalPoints( expert.getExpertPoints().getTotalPoints() )
+                                .totalPoints( expertTotalPoint )
                                 .operationType( tempOpExpertsLog.getOperationType() )
                                 .amountEntered( tempOpExpertsLog.getAmountEntered() )
                                 .operationDate( tempOpExpertsLog.getOperationDate() )

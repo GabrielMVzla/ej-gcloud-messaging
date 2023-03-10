@@ -35,9 +35,14 @@ public class OperationExpertLogService {
     private final OperationExpertLogDAO operationExpertLogDAO;
     private final DataExtractorService dataExtractorService;
     private final static String PERFORMED_OPERATION = "ABONO";
-    private final BigQueryConnector bigQueryConnector;
 
-    public ExpertInfoBigQueryDTO saveExpertInfoOperationDBAndBQ(ExpertOperationDTO expertOperationDTO) throws IOException {
+    /**
+     * Guarda información de operación realizada en tabla <u>operations_experts_log</u> y retorna información específica para guardar en BigQuery
+     *
+     * @param expertOperationDTO ExpertOperationDTO
+     * @return ExpertInfoBigQueryDTO
+     */
+    public ExpertInfoBigQueryDTO getSpecificInfoToSendBigQuery(ExpertOperationDTO expertOperationDTO)  {
 
         Expert expert = expertDAO.findById( expertOperationDTO.getIdExpert() ).orElse(null);
 
@@ -49,25 +54,31 @@ public class OperationExpertLogService {
         long expertId = expertOperationDTO.getIdExpert();
         String operation = expertOperationDTO.getOperationType(); //.replace("\\u00D3", "Ó");
         double amountEntered = expertOperationDTO.getAmountEntered();
-        long initialCalcPoints = (long) amountEntered / 100;
+        int multiplicadorBono = PERFORMED_OPERATION.equals(operation) ? 2 : 1;
+        long initialCalcPoints = (long) (amountEntered * multiplicadorBono) / 100;
 
+        //por si nunca ha realizado una operación, se va a realizar esta acción, en lugar de consultar puntos anteriores para realizar operación en base a ello
         ExpertPoint expertPoint = ExpertPoint.builder()
                 .id( expertId ) //id igual al del experto
-                .lastOperation( "INICIAL" )
+                .lastOperation( "COLOCACI\\u00D3N" )
                 .lastPointsEntered( initialCalcPoints )
                 .lastAmountEntered( amountEntered )
                 .totalPoints( initialCalcPoints )
                 .expert(expert)
                 .build();
 
-        int multiplicadorBono = PERFORMED_OPERATION.equals(operation) ? 2 : 1;
-        long finalCalcGeneratedPoints = initialCalcPoints;
+        long finalResultGeneratedPoints = initialCalcPoints;
         long finalTotalPointsExpert = initialCalcPoints;
         //Datos actuales de los puntos de nuestr@ expert@
         if (expert.getExpertPoints() != null) {
-            long lastAmountEntered = (long) expert.getExpertPoints().getLastAmountEntered();
+            //TODO crear nuevo campo que almacene los puntos residuales para que sean utilizados en el futuro
+            //TODO add nuevo atributo amucumulatedResidual
 
-            long lastResidualAmount = lastAmountEntered % 100;
+            //TODO remover esto x nuevo campo amucumulatedResidual***/
+                long lastAmountEntered = (long) expert.getExpertPoints().getLastAmountEntered();
+                long lastResidualAmount = lastAmountEntered % 100;
+            log.info("cada 100 pesos ingresados es un punto, si no se llega al punto, el residual se acumula para la próxima!");
+
             String lastOperation = expert.getExpertPoints().getLastOperation().toUpperCase();
 
             //si operación anterior no es ABONO y la actual SÍ, entonces se divide entre 2 solo la anterior, ya que más adelante hay una operación de multiplicar x 2 x el bono actual con el residual, entonces,
@@ -75,16 +86,26 @@ public class OperationExpertLogService {
             if(!PERFORMED_OPERATION.equals( lastOperation ) && PERFORMED_OPERATION.equals( operation ) && lastResidualAmount != 0){
                 lastResidualAmount = (long) Math.ceil(( (double) lastResidualAmount / 2));
             }
-            long calcPointsEnteredAndResidual =  (long) (amountEntered + lastResidualAmount) / 100;
-            finalCalcGeneratedPoints = calcPointsEnteredAndResidual * multiplicadorBono;
+            long calcPointsEnteredAndResidual =  (long) ((amountEntered + lastResidualAmount)   * multiplicadorBono);
+
+
+            //TODO corregir que si ya se tomaron los puntos para completar un punto extra, no volver a utilizarlos para el siguiente
+            long pointsFromAmountEntered = (long) (amountEntered * multiplicadorBono) / 100;
+            long pointsFromAmountEnteredAndResidual = (calcPointsEnteredAndResidual) / 100;
+            if(pointsFromAmountEnteredAndResidual > pointsFromAmountEntered){
+            //solo se podría generar 1 punto debido a las reglas del negocio con los cálculos establecidos
+                log.info("Un punto generado x acumulación anterior!!!");
+            }
+
+            finalResultGeneratedPoints = calcPointsEnteredAndResidual / 100;
 
             long totalPointsExpert = expert.getExpertPoints().getTotalPoints();
-            finalTotalPointsExpert = totalPointsExpert + finalCalcGeneratedPoints;
+            finalTotalPointsExpert = totalPointsExpert + finalResultGeneratedPoints;
 
             expertPoint = ExpertPoint.builder()
                     .id( expertId ) //se agrega también el id para que sepa que es actualización de datos
                     .lastOperation( operation )
-                    .lastPointsEntered( finalCalcGeneratedPoints )
+                    .lastPointsEntered( finalResultGeneratedPoints )
                     .lastAmountEntered( amountEntered )
                     .totalPoints( finalTotalPointsExpert )
                     .expert( expert )
@@ -94,7 +115,7 @@ public class OperationExpertLogService {
         OperationExpertLog operationExpertLog = OperationExpertLog.builder()
                 .operationType( operation )
                 .amountEntered( amountEntered )
-                .pointsGenerated( finalCalcGeneratedPoints )
+                .pointsGenerated( finalResultGeneratedPoints )
                 .expert( expert )
                 .build();
 
@@ -110,14 +131,23 @@ public class OperationExpertLogService {
                         .id( expertId )
                         .operationType( operation )
                         .amountEntered( amountEntered )
-                        .pointsOperation( finalCalcGeneratedPoints )
+                        .pointsOperation( finalResultGeneratedPoints )
                         .totalPoints( finalTotalPointsExpert )
                         .operationDate( savedOperationExpertLog.getOperationDate() )
                         .build();
 
         log.info("expertInfo: {}", expertInfo);
-        dataExtractorService.queryToBigQuery(ConstantsUtil.SCHEMA_TBL_DEMO);
 
         return expertInfo;
     }
+
+    public void saveExpertOperationDBAndBQ(ExpertOperationDTO expertOperationDTO) throws IOException {
+        ExpertInfoBigQueryDTO expertInfoBigQueryDTO = this.getSpecificInfoToSendBigQuery(expertOperationDTO);
+        dataExtractorService.queryToCSVAndBigQuery(expertInfoBigQueryDTO);
+    }
+
+    public void saveListExpertOperationsDBAndBQ() throws IOException {
+        dataExtractorService.queryListToCSVAndBigQuery();
+    }
+
 }

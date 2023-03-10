@@ -26,13 +26,15 @@ public class ExpertPoint implements Serializable {
     @Column(name = "last_operation")
     private String lastOperation;
 
+    @JsonAlias("last_points_entered")
+    @Column(name = "last_points_entered")
+    private long lastPointsEntered;
+
     @JsonAlias("last_amount_entered")
     @Column(name = "last_amount_entered")
     private double lastAmountEntered;
 
-    @JsonAlias("last_points_entered")
-    @Column(name = "last_points_entered")
-    private long lastPointsEntered;
+    //TODO add nuevo atributo amucumulatedResidual
 
     @JsonAlias("total_points")
     @Column(name = "total_points")

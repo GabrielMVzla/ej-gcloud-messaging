@@ -23,7 +23,7 @@ public class ExpertController {
     @GetMapping("/info")
     public List<GeneralInfoExpertDTO> getGeneralInfoExpert(){
 
-        return expertService.getGeneralInfoExpert();
+        return expertService.getListGeneralInfoExpert();
     }
 
     @GetMapping("/expert/{id}")

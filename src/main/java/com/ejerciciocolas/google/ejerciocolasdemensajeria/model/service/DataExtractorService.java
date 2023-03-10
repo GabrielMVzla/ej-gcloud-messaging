@@ -23,36 +23,37 @@ public class DataExtractorService {
     private final BigQueryConnector bigQueryConnector;
     private final BigQueryDAO bigQueryDAO;
     private final ExpertService expertService;
+
     /**
-     * Crea un archivo temporal con info de la base de datos <em><u>H2 en este proyecto</u></em> que pueda ser envíado a gcloud BigQuery
+     * Crea un archivo temporal con una lista de información de la base de datos <em><u>H2 en este proyecto</u></em> que pueda ser envíado a gcloud BigQuery
      *
-     * @param schema List&#60;Pair&#60;String, String>>
-     * @return File
+     * @param expertInfoBigQueryDTO ExpertInfoBigQueryDTO
      * @throws IOException
      */
-    public File queryToCSV(List<Pair<String, String>> schema) throws IOException {
-
+    public void queryToCSVAndBigQuery(ExpertInfoBigQueryDTO expertInfoBigQueryDTO) throws IOException {
         File csvFile = Files.createTempFile("extract_data", ".csv").toFile();
 
-        List<ExpertInfoBigQueryDTO> experstInfoFromBigQuery =
-                expertService.getExpertInfoToSendBigQuery();
+        CsvExtractor csvExtractor = CsvExtractor.getSingletonIntance();
+        csvExtractor.oneExtractor(csvFile, expertInfoBigQueryDTO);
 
-        new CsvExtractor(csvFile, experstInfoFromBigQuery, schema); //CsvExtractor csvExtractor =
-
-        System.out.println(csvFile.getName());
-        return csvFile;
+        bigQueryConnector.uploadToBigQuery(csvFile, ConstantsUtil.TABLE_DATA_SET, false, ConstantsUtil.SCHEMA_TBL_DEMO);
     }
+
     /**
-     * Envía la data seleccionada por la query dada a gcloud -> data-set -> tabla
+     * Crea un archivo temporal con una lista de información de la base de datos <em><u>H2 en este proyecto</u></em> que pueda ser envíado a gcloud BigQuery
      *
-     * @param schema List&#60;Pair&#60;String, String>>
      * @throws IOException
      */
-    public void queryToBigQuery(List<Pair<String, String>> schema) throws IOException {
+    public void queryListToCSVAndBigQuery() throws IOException {
 
-        File csvFile = this.queryToCSV( schema);
+        File csvFile = Files.createTempFile("extract_data", ".csv").toFile();
+        List<ExpertInfoBigQueryDTO> experstInfoFromBigQuery =
+                expertService.getListExpertInfoToSendBigQuery();
 
-        bigQueryConnector.uploadToBigQuery(csvFile, ConstantsUtil.TABLE_DATA_SET, true, schema);
+        CsvExtractor csvExtractor = CsvExtractor.getSingletonIntance();
+        csvExtractor.listExtractor(csvFile, experstInfoFromBigQuery);
+
+        bigQueryConnector.uploadToBigQuery(csvFile, ConstantsUtil.TABLE_DATA_SET, true, ConstantsUtil.SCHEMA_TBL_DEMO);
     }
 
     /**
@@ -63,7 +64,6 @@ public class DataExtractorService {
      * @throws InterruptedException
      */
     public Page<Map<String, Object>> getExpertsDataByBigQuery(int page) throws InterruptedException {
-
         String query = "\nSELECT id, operation_type, amount_entered, total_points, operation_date\n" +
                 "FROM `gcp-pubsub-379420.ds_demo.tbl_demo`";
 
