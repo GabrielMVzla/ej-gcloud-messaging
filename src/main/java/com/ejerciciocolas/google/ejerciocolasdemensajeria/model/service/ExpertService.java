@@ -26,6 +26,11 @@ public class ExpertService {
     private final ExpertDAO expertDAO;
     private final ExpertPointDAO expertPointDAO;
 
+    /**
+     * Retorna un listado con informaci&#243;n espec&#237;fica de las/los expert@s para ser guardada en la tabla de gcloud BigQuery
+     *
+     * @return List&#60;ExpertInfoBigQueryDTO>
+     */
     public List<ExpertInfoBigQueryDTO> getListExpertInfoToSendBigQuery(){
 
         List<GeneralInfoExpertDTO> generalInfoExpertDTOs = this.getListGeneralInfoExpert();
@@ -49,6 +54,11 @@ public class ExpertService {
         return expertInfoBigQueryDTOS;
     }
 
+    /**
+     * Retorna un listado con la informaci&#243;n generas de de las/los expert@s en la BDD H2
+     *
+     * @return List<GeneralInfoExpertDTO>
+     */
     public List<GeneralInfoExpertDTO> getListGeneralInfoExpert() {
 
         List<Expert> experts = expertDAO.findAll();
@@ -62,7 +72,7 @@ public class ExpertService {
         long acumulatedResidualPoints = 0;
 
         for (Expert expert : experts) {
-            long idExpert = expert.getId(); //id del expert
+            long idExpert = expert.getId(); //id del/(de la) expert@
 
             if (expert.getOperationExpertLogs().isEmpty()) { //si no cuenta con operación, pasa a sig. iteración
                 continue;

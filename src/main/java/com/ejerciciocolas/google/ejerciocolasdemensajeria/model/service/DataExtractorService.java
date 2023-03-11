@@ -2,12 +2,11 @@ package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.ConstantsUtil;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.CsvExtractor;
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.connector.BigQueryConnector;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_bigquery.connector.*;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.BigQueryDAO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoBigQueryDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -25,7 +24,7 @@ public class DataExtractorService {
     private final ExpertService expertService;
 
     /**
-     * Crea un archivo temporal con una lista de información de la base de datos <em><u>H2 en este proyecto</u></em> que pueda ser envíado a gcloud BigQuery
+     * Crea un archivo temporal con una lista de informaci&#243;n de la base de datos <em><u>H2 en este proyecto</u></em> que pueda ser enviado a gcloud BigQuery
      *
      * @param expertInfoBigQueryDTO ExpertInfoBigQueryDTO
      * @throws IOException
@@ -40,7 +39,7 @@ public class DataExtractorService {
     }
 
     /**
-     * Crea un archivo temporal con una lista de información de la base de datos <em><u>H2 en este proyecto</u></em> que pueda ser envíado a gcloud BigQuery
+     * Crea un archivo temporal con una lista de informaci&#243;n de la base de datos <em><u>H2 en este proyecto</u></em> que pueda ser enviado a gcloud BigQuery
      *
      * @throws IOException
      */

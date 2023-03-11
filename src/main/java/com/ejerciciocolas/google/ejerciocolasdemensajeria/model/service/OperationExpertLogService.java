@@ -1,7 +1,5 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.connector.BigQueryConnector;
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.ConstantsUtil;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.ExpertDAO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.ExpertPointDAO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.OperationExpertLogDAO;
@@ -10,19 +8,13 @@ import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertOperat
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.Expert;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.ExpertPoint;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.entity.OperationExpertLog;
-import com.google.api.gax.rpc.NotFoundException;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -38,7 +30,8 @@ public class OperationExpertLogService {
     private static final int POINTS_FLAG = 100;
 
     /**
-     * Guarda información de operación realizada en tabla <u>operations_experts_log</u> y retorna información específica para guardar en BigQuery
+     * Retorna informaci&#243;n escencial para guardar en gcloug BigQuery, adem&#225;s guarda informaci&#243;n de operaci&#243;n realizada en tabla <u>operations_experts_log</u>
+     * y retorna informaci&#243;n espec&#237;fica para guardar en BigQuery adem&#225;s se calculan los puntos generados por las/los expert@s
      *
      * @param expertOperationDTO ExpertOperationDTO
      * @return ExpertInfoBigQueryDTO
@@ -61,7 +54,7 @@ public class OperationExpertLogService {
 
         //por si nunca ha realizado una operación, se va a realizar esta acción, en lugar de consultar puntos anteriores para realizar operación en base a ello
         ExpertPoint expertPoint = ExpertPoint.builder()
-                .id( expertId ) //id igual al del experto
+                .id( expertId ) //id igual al del/(de la) expert@
                 .lastOperation( "COLOCACI\\u00D3N" )
                 .lastPointsEntered( initialCalcPoints )
                 .lastAmountEntered( amountEntered )
@@ -77,7 +70,7 @@ public class OperationExpertLogService {
 
             long lastAcumulatedResidualPoints = expert.getExpertPoints().getAcumulatedResidual();
 
-            log.info("cada 100 pesos ingresados es un punto, si no se llega al punto, el residual se acumula para la próxima!");
+            log.info("cada 100 pesos ingresados es un punto, si no se llega al punto, el residual se acumula para la pr\u00D3xima!");
 
             String lastOperation = expert.getExpertPoints().getLastOperation().toUpperCase();
 
@@ -93,7 +86,7 @@ public class OperationExpertLogService {
             long pointsFromAmountEnteredAndResidual = (calcPointsEnteredAndResidual) / POINTS_FLAG;
             if(pointsFromAmountEnteredAndResidual > pointsFromAmountEntered){
             //solo se podría generar 1 punto debido a las reglas del negocio con los cálculos establecidos
-                log.info("Un punto generado x acumulación anterior!!!");
+                log.info("Un punto generado x acumulaci\u00D3n anterior!!!");
             }
 
             finalAcumulatedResidualPoints = calcPointsEnteredAndResidual % 100;
@@ -143,11 +136,23 @@ public class OperationExpertLogService {
         return expertInfo;
     }
 
+    /**
+     * Toma la información que lleg&#243; desde la request para realizar guardado informaci&#243;n en H2 y c&#225;lculos, adem&#225;s
+     * de luego mandarlo a gcloud BigQuery
+     *
+     * @param expertOperationDTO ExpertOperationDTO
+     * @throws IOException
+     */
     public void saveExpertOperationDBAndBQ(ExpertOperationDTO expertOperationDTO) throws IOException {
         ExpertInfoBigQueryDTO expertInfoBigQueryDTO = this.getSpecificInfoToSendBigQuery(expertOperationDTO);
         dataExtractorService.queryToCSVAndBigQuery(expertInfoBigQueryDTO);
     }
 
+    /**
+     * Toma la informaci&#243n de las/los expert@s y la env&#237;a a gcloud BigQuery
+     *
+     * @throws IOException
+     */
     public void saveListExpertOperationsDBAndBQ() throws IOException {
         dataExtractorService.queryListToCSVAndBigQuery();
     }

@@ -20,11 +20,23 @@ public class BigQueryController {
     private final DataExtractorService dataExtractorService;
     private final ExpertService expertService;
 
+    /**
+     * Muestra la informaci&#243;n de manera paginada los expertos almacenada en gcloud BigQuery
+     *
+     * @param page Integer
+     * @return Page<Map<String, Object>>
+     * @throws InterruptedException
+     */
     @GetMapping("/experts-info-bq/{page}")
     public Page<Map<String, Object>> getExpertsInfoByBigQuery(@PathVariable Integer page) throws InterruptedException {
         return dataExtractorService.getExpertsDataByBigQuery(page);
     }
 
+    /**
+     * Retorna un listado con la informaci&#243;n general de las/los expert@s
+     *
+     * @return List<ExpertInfoBigQueryDTO>
+     */
     @GetMapping("/experts-info")
     public List<ExpertInfoBigQueryDTO> getExpertInfoFromBigQuery() {
         return expertService.getListExpertInfoToSendBigQuery();

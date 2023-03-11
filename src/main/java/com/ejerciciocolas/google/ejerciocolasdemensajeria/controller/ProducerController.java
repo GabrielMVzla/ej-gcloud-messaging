@@ -6,6 +6,7 @@ import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.MyAppGCPMess
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service.OperationExpertLogService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,13 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@NoArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/pubsub")
 public class ProducerController {
 
-    @Autowired private OutboundConfiguration.PubsubOutboundGateway gateway;
-    @Autowired private OperationExpertLogService operationExpertLogService;
+    private final OutboundConfiguration.PubsubOutboundGateway gateway;
+    private final OperationExpertLogService operationExpertLogService;
 
+    /**
+     * Publica un mensaje cualquiera en la cola Pub/Sub de gcloud
+     *
+     * @param message MyAppGCPMessageDTO
+     * @return String
+     */
     @PostMapping("/publish")
     public String publishMessage(@RequestBody MyAppGCPMessageDTO message){
         log.info("Mensaje saliente {}", message.toString());
@@ -30,6 +37,11 @@ public class ProducerController {
         return "Message sent to Google Pub/Sub Successfully";
     }
 
+    /**
+     * Publica en la cola de mensajería un mensaje el cual se interpreta que la informaci&#243;n almacenada de las/los experto@s se almacenar&#225; en gcloud BigQuery
+     *
+     * @return String
+     */
     @PostMapping("/publish-all-experts-operations")
     public String publishAllExpertsOperations(){
         gateway.sendToPubsub( "" );
@@ -37,12 +49,19 @@ public class ProducerController {
         return "Se enviaron los movimientos de las/los expert@s a bigQuery";
     }
 
+    /**
+     * Publica en la cola de mensajer&#237;a un mensaje con informaci&#243;n de una operaci&#243;n realizada por el/la expert@, el cual sus detalles ser&#225;n almacenados
+     * en H2 y los detalles m&#225;s espec&#237;ficos en gcloud BigQuery
+     *
+     * @param expertOperationDTO ExpertOperationDTO
+     * @return String
+     */
     @PostMapping("/publish-expert-operation")
     public String publishExpertOperation(@RequestBody ExpertOperationDTO expertOperationDTO){
         log.info("Mensaje saliente {}", expertOperationDTO.toString());
 
         gateway.sendToPubsub( expertOperationDTO.toString() );
 
-        return "Se envío el movimiento del expert@ a bigQuery";
+        return "Se envío el movimiento del/(de la) expert@ a bigQuery";
     }
 }
