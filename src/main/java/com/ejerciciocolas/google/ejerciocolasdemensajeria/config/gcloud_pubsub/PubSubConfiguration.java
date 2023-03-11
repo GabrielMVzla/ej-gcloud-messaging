@@ -1,4 +1,4 @@
-package com.ejerciciocolas.google.ejerciocolasdemensajeria.config;
+package com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

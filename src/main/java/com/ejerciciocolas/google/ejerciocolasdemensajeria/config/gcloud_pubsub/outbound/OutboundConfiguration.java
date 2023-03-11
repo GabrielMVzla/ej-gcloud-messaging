@@ -1,10 +1,8 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.outbound;
 
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.PubSubConfiguration;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.integration.outbound.PubSubMessageHandler;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.MessagingGateway;

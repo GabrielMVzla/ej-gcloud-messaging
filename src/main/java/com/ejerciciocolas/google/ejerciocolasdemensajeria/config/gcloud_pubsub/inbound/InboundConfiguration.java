@@ -1,6 +1,5 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.inbound;
 
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.PubSubConfiguration;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.AttributesToStringToArrayUtil;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertOperationDTO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service.OperationExpertLogService;
@@ -10,7 +9,6 @@ import com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAd
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import com.google.cloud.spring.pubsub.support.GcpPubSubHeaders;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +20,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Configuration
 @AllArgsConstructor
