@@ -37,11 +37,12 @@ INSERT INTO experts (first_name, last_name) VALUES('Amber', 'Grim');
 INSERT INTO experts (first_name, last_name) VALUES('Antonio', 'Luffman');
 INSERT INTO experts (first_name, last_name) VALUES('Erma', 'Antwis');
 
-INSERT INTO experts_points (id, last_operation, last_points_entered, last_amount_entered, acumulated_residual, total_points, id_expert) VALUES(1, 'COLOCACI\u00D3N', 450, 45500.00, 50, 450, 1);
+INSERT INTO experts_points (id, last_operation, last_points_entered, last_amount_entered, acumulated_residual, total_points, id_expert) VALUES(1, 'COLOCACI\u00D3N', 450, 45050.00, 50, 450, 1);
 INSERT INTO experts_points (id, last_operation, last_points_entered, last_amount_entered, acumulated_residual, total_points, id_expert) VALUES(2, 'ABONO', 20, 1000.00, 0, 210, 2);
 INSERT INTO experts_points (id, last_operation, last_points_entered, last_amount_entered, acumulated_residual, total_points, id_expert) VALUES(3, 'ABONO', 120, 6000.00, 0, 620, 3);
 
-INSERT INTO operations_experts_log (operation_type, amount_entered, points_generated, operation_date, id_expert) VALUES('COLOCACI\u00D3N', 45000.00, 450, '2022-08-23 12:00:00', 1);
+                                                                                                                                        --45050 para que queden 50 como residual para acumularse y llegar al punto en el futuro
+INSERT INTO operations_experts_log (operation_type, amount_entered, points_generated, operation_date, id_expert) VALUES('COLOCACI\u00D3N', 45050.00, 450, '2022-08-23 12:00:00', 1);
 --INSERT INTO operations_experts_log (operation_type, amount_entered, points_generated, operation_date, id_expert) VALUES('ABONO', 5000.00, 100, '2022-08-23 12:00:00', 1);
 INSERT INTO operations_experts_log (operation_type, amount_entered, points_generated, operation_date, id_expert) VALUES('COLOCACI\u00D3N', 19000.00, 190, '2022-08-23 12:00:00', 2);
 INSERT INTO operations_experts_log (operation_type, amount_entered, points_generated, operation_date, id_expert) VALUES('ABONO', 1000.00, 20, '2022-08-23 12:00:00', 2);

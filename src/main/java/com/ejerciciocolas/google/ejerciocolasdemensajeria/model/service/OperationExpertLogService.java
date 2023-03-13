@@ -130,7 +130,6 @@ public class OperationExpertLogService {
                         .totalPoints( finalTotalPointsExpert )
                         .operationDate( savedOperationExpertLog.getOperationDate() )
                         .build();
-
         log.info("expertInfo: {}", expertInfo);
 
         return expertInfo;

@@ -1,0 +1,7 @@
+FROM adoptopenjdk/openjdk8
+MAINTAINER gabriel_montes
+ #RUN addgroup -S spring && adduser -S spring -G spring
+#USER spring:spring
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} EjercioColasDeMensajeria.jar
+ENTRYPOINT ["java", "-jar", "EjercioColasDeMensajeria.jar"]
