@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,18 +70,13 @@ public class ProducerController {
      * @return String
      */
     @PostMapping("/publish-expert-operation")
-    public ResponseEntity<String> publishExpertOperation(@Valid @RequestBody ExpertOperationDTO expertOperationDTO, BindingResult result) {
+    public ResponseEntity<String> publishExpertOperation(@Valid @RequestBody ExpertOperationDTO expertOperationDTO) {
 
+        gateway.sendToPubsub( expertOperationDTO.toString() );
+        return new ResponseEntity<>("Se envío el movimiento del/(de la) expert@ a bigQuery", HttpStatus.OK);
 
-        if (!expertOperationDTO.getOperationType().isEmpty() && expertOperationDTO.getOperationType() != null) {
-
-            log.info("Mensaje saliente {}", expertOperationDTO.toString());
+        /*if (!expertOperationDTO.getOperationType().isEmpty() && expertOperationDTO.getOperationType() != null) {            log.info("Mensaje saliente {}", expertOperationDTO.toString());
             gateway.sendToPubsub( expertOperationDTO.toString() );
-
-            return new ResponseEntity<>("Se envío el movimiento del/(de la) expert@ a bigQuery", HttpStatus.OK);
-        } else {
-
-            throw new BadRequestExpertOperationException(EXPERT_BAD_REQUEST_CODE, getSpecificMessageError(EXPERT_BAD_REQUEST_CODE) + " con el campo 'operation_type'.");
-        }
+        } else {            throw new BadRequestExpertOperationException(EXPERT_BAD_REQUEST_CODE, getSpecificMessageError(EXPERT_BAD_REQUEST_CODE) + " con el campo 'operation_type'."); }*/
     }
 }

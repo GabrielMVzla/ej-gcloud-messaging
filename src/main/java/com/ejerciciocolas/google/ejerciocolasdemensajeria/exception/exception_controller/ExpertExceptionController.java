@@ -2,13 +2,21 @@ package com.ejerciciocolas.google.ejerciocolasdemensajeria.exception.exception_c
 
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.exception.exceptions.BadRequestExpertOperationException;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ErrorDTO;
+import com.google.api.Http;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import springfox.documentation.builders.ResponseBuilder;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.ExceptionCustomCodesUtil.*;
 
@@ -23,5 +31,18 @@ public class ExpertExceptionController {
                 .build();
 
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidateException(MethodArgumentNotValidException exception){
+        Map<String, String> response = new HashMap<>();
+        exception.getBindingResult().getFieldErrors()
+                    .stream()
+                    .forEach(err -> {
+                        response.put(err.getField(),  err.getDefaultMessage());
+                    });
+
+            return response;
     }
 }
