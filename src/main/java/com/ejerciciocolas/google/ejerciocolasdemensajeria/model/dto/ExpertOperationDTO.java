@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Builder
 @NoArgsConstructor
@@ -15,11 +16,11 @@ import javax.validation.constraints.NotBlank;
 public class ExpertOperationDTO {
 
     @JsonAlias("id_expert")
-    @Min(0)
     private long idExpert;
 
     @JsonAlias("operation_type")
-    @NotBlank(message = "campo \"operationType\" no debe estar vacío.")
+    @NotBlank(message = " - operation_type: no debe estar vacío")
+    @Pattern(regexp="^(?i)(abono|colocaci[oOóÓ\u00D3\u00F3]n)$", message="El valor debe ser (abono o colocación) mayúscula o minúscula.")
     private String operationType;
 
     @JsonAlias("amount_entered")

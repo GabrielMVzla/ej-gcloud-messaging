@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ExceptionCustomCodesUtil {
 
-    public static final String DEAFULT_CODE_ERROR = "Error-400";
+    public static final String DEAFULT_CODE_ERROR = "";
     public static final String EXPERT_BAD_REQUEST_CODE = "e-400";
     public static final String EXPERT_CODE_NOT_FOUND = "e-404";
 
@@ -19,8 +19,7 @@ public class ExceptionCustomCodesUtil {
 
     public static String getSpecificMessageError(String code){
         code = code != null && !code.isEmpty() ? code : "Error-400"; //Error-400 por default genérico
-        ExceptionCustomCodesUtil ecc = new ExceptionCustomCodesUtil();
 
-        return ecc.diccionarioMsjsErrors.get(code);
+        return diccionarioMsjsErrors.get(code);
     }
 }

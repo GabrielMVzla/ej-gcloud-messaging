@@ -1,5 +1,9 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service;
 
+import static com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.ExceptionCustomCodesUtil.*;
+
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.outbound.OutboundConfiguration;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.exception.exceptions.ExpertNotFoundException;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.ExpertDAO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.ExpertPointDAO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.OperationExpertLogDAO;
@@ -26,6 +30,8 @@ public class OperationExpertLogService {
     private final ExpertPointDAO expertPointDAO;
     private final OperationExpertLogDAO operationExpertLogDAO;
     private final DataExtractorService dataExtractorService;
+    private final OutboundConfiguration.PubsubOutboundGateway gateway;
+
     private static final String OPERATION_PERFORMED = "ABONO";
     private static final int POINTS_FLAG = 100;
 
@@ -39,9 +45,8 @@ public class OperationExpertLogService {
     public ExpertInfoBigQueryDTO getSpecificInfoToSendBigQuery(ExpertOperationDTO expertOperationDTO)  {
 
         Expert expert = expertDAO.findById( expertOperationDTO.getIdExpert() ).orElse(null);
-
         if(expert == null)
-            return null;
+            throw new ExpertNotFoundException(EXPERT_CODE_NOT_FOUND, getSpecificMessageError(EXPERT_CODE_NOT_FOUND));
 
         expertOperationDTO.setOperationType( expertOperationDTO.getOperationType().toUpperCase() );
 
@@ -55,7 +60,7 @@ public class OperationExpertLogService {
         //por si nunca ha realizado una operación, se va a realizar esta acción, en lugar de consultar puntos anteriores para realizar operación en base a ello
         ExpertPoint expertPoint = ExpertPoint.builder()
                 .id( expertId ) //id igual al del/(de la) expert@
-                .lastOperation( "COLOCACI\\u00D3N" )
+                .lastOperation( "COLOCACI\u00D3N" )
                 .lastPointsEntered( initialCalcPoints )
                 .lastAmountEntered( amountEntered )
                 .acumulatedResidual( finalAcumulatedResidualPoints )
@@ -70,16 +75,17 @@ public class OperationExpertLogService {
 
             long lastAcumulatedResidualPoints = expert.getExpertPoints().getAcumulatedResidual();
 
-            log.info("cada 100 pesos ingresados es un punto, si no se llega al punto, el residual se acumula para la pr\u00D3xima!");
+            log.info("cada 100 pesos ingresados es un punto, si no se llega al punto, el residual se acumula para la pr\u00F3xima!");
 
             String lastOperation = expert.getExpertPoints().getLastOperation().toUpperCase();
 
             //si operación anterior no es ABONO y la actual SÍ, entonces se divide entre 2 solo la anterior, ya que más adelante hay una operación de multiplicar x 2 x el bono actual con el residual, entonces,
             // los puntos anteriores generados quedan con el valor inicial + los nuevos con su bonificación, ya que no se debe realizar de nuevo el bono pq ya se ha realizado anteriormente la operación de bono
+            //si los puntos residuales es impar, cuando se haga la división se redondeará para arriba
             if(!OPERATION_PERFORMED.equals( lastOperation ) && OPERATION_PERFORMED.equals( operation ) && lastAcumulatedResidualPoints != 0){
                 lastAcumulatedResidualPoints = (long) Math.ceil(( (double) lastAcumulatedResidualPoints / 2));
             }
-            long calcPointsEnteredAndResidual =  (long) ((amountEntered + lastAcumulatedResidualPoints)   * multiplicadorBono);
+            long calcPointsEnteredAndResidual =  (long) ((amountEntered + lastAcumulatedResidualPoints) * multiplicadorBono);
 
 
             long pointsFromAmountEntered = (long) (amountEntered * multiplicadorBono) / POINTS_FLAG;
@@ -148,7 +154,7 @@ public class OperationExpertLogService {
     }
 
     /**
-     * Toma la informaci&#243n de las/los expert@s y la env&#237;a a gcloud BigQuery
+     * Toma la informaci&#243;n de las/los expert@s y la env&#237;a a gcloud BigQuery
      *
      * @throws IOException
      */
@@ -156,4 +162,14 @@ public class OperationExpertLogService {
         dataExtractorService.queryListToCSVAndBigQuery();
     }
 
+    /**
+     * Toma la informaci&#243;n del request (Operaci&#243;n de/(de la) expert@) y la env&#237;a a gcloud Pub/Sub
+     *
+     * @param expertOperationDTO ExpertOperationDTO
+     * @return String
+     */
+    public String publishExpertOperation(ExpertOperationDTO expertOperationDTO) {
+        gateway.sendToPubsub( expertOperationDTO.toString() );
+        return "Se envi\u00F3 el movimiento del/(de la) expert@ a la cola";
+    }
 }

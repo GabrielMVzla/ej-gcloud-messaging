@@ -37,7 +37,7 @@ INSERT INTO experts (first_name, last_name) VALUES('Amber', 'Grim');
 INSERT INTO experts (first_name, last_name) VALUES('Antonio', 'Luffman');
 INSERT INTO experts (first_name, last_name) VALUES('Erma', 'Antwis');
 
-INSERT INTO experts_points (id, last_operation, last_points_entered, last_amount_entered, acumulated_residual, total_points, id_expert) VALUES(1, 'COLOCACI\u00D3N', 450, 45050.00, 50, 450, 1);
+INSERT INTO experts_points (id, last_operation, last_points_entered, last_amount_entered, acumulated_residual, total_points, id_expert) VALUES(1, 'COLOCACI\u00D3N', 450, 45050.00, 99, 450, 1);
 INSERT INTO experts_points (id, last_operation, last_points_entered, last_amount_entered, acumulated_residual, total_points, id_expert) VALUES(2, 'ABONO', 20, 1000.00, 0, 210, 2);
 INSERT INTO experts_points (id, last_operation, last_points_entered, last_amount_entered, acumulated_residual, total_points, id_expert) VALUES(3, 'ABONO', 120, 6000.00, 0, 620, 3);
 

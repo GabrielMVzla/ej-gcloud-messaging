@@ -7,6 +7,7 @@ import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dao.BigQueryDAO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertInfoBigQueryDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -63,7 +64,7 @@ public class DataExtractorService {
      * @throws InterruptedException
      */
     public Page<Map<String, Object>> getExpertsDataByBigQuery(int page) throws InterruptedException {
-        String query = "\nSELECT id, operation_type, amount_entered, total_points, operation_date\n" +
+        String query = "\nSELECT id, operation_type, amount_entered, points_operation, acumulated_residual_points, total_points, operation_date\n" +
                 "FROM `gcp-pubsub-379420.ds_demo.tbl_demo`";
 
         return bigQueryDAO.getPagedExpertsDataByBigQuery(query, page);

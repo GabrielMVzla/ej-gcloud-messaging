@@ -1,31 +1,19 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.controller;
 
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.outbound.OutboundConfiguration;
-import com.ejerciciocolas.google.ejerciocolasdemensajeria.exception.exceptions.BadRequestExpertOperationException;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertOperationDTO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.MyAppGCPMessageDTO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service.OperationExpertLogService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.ExceptionCustomCodesUtil.*;
 
 @Slf4j
 @RestController
@@ -51,15 +39,14 @@ public class ProducerController {
     }
 
     /**
-     * Publica en la cola de mensajería un mensaje el cual se interpreta que la informaci&#243;n almacenada de las/los experto@s se almacenar&#225; en gcloud BigQuery
+     * Publica en la cola (Pub/Sub) un mensaje el cual interpreta que la informaci&#243;n almacenada de las/los experto@s se almacenar&#225; en gcloud BigQuery
      *
      * @return String
      */
     @PostMapping("/publish-all-experts-operations")
     public String publishAllExpertsOperations(){
         gateway.sendToPubsub( "" );
-
-        return "Se enviaron los movimientos de las/los expert@s a bigQuery";
+        return "Se enviaron los movimientos de las/los expert@s a la cola";
     }
 
     /**
@@ -71,12 +58,7 @@ public class ProducerController {
      */
     @PostMapping("/publish-expert-operation")
     public ResponseEntity<String> publishExpertOperation(@Valid @RequestBody ExpertOperationDTO expertOperationDTO) {
-
-        gateway.sendToPubsub( expertOperationDTO.toString() );
-        return new ResponseEntity<>("Se envío el movimiento del/(de la) expert@ a bigQuery", HttpStatus.OK);
-
-        /*if (!expertOperationDTO.getOperationType().isEmpty() && expertOperationDTO.getOperationType() != null) {            log.info("Mensaje saliente {}", expertOperationDTO.toString());
-            gateway.sendToPubsub( expertOperationDTO.toString() );
-        } else {            throw new BadRequestExpertOperationException(EXPERT_BAD_REQUEST_CODE, getSpecificMessageError(EXPERT_BAD_REQUEST_CODE) + " con el campo 'operation_type'."); }*/
+        String msg = operationExpertLogService.publishExpertOperation(expertOperationDTO);
+        return new ResponseEntity<>(msg, HttpStatus.OK);
     }
 }

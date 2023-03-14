@@ -8,26 +8,26 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Getter
 @Setter
 @ToString
-public class BadRequestExpertOperationException extends RuntimeException {
+public class ExpertNotFoundException extends RuntimeException {
 
     private String code;
 
-    public BadRequestExpertOperationException(String code) {
+    public ExpertNotFoundException(String code) {
         super();
         this.code = code;
     }
 
-    public BadRequestExpertOperationException(String code, String message, Throwable cause) {
+    public ExpertNotFoundException(String code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
     }
 
-    public BadRequestExpertOperationException(String code, String message) {
+    public ExpertNotFoundException(String code, String message) {
         super(message);
         this.code = code;
     }
 
-    public BadRequestExpertOperationException(String code, Throwable cause) {
+    public ExpertNotFoundException(String code, Throwable cause) {
         super(cause);
         this.code = code;
     }

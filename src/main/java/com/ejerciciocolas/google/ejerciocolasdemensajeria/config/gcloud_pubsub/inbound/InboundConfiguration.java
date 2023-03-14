@@ -1,6 +1,7 @@
 package com.ejerciciocolas.google.ejerciocolasdemensajeria.config.gcloud_pubsub.inbound;
 
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.config.util.AttributesToStringToArrayUtil;
+import com.ejerciciocolas.google.ejerciocolasdemensajeria.exception.exceptions.ExpertNotFoundException;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.dto.ExpertOperationDTO;
 import com.ejerciciocolas.google.ejerciocolasdemensajeria.model.service.OperationExpertLogService;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
@@ -67,8 +68,13 @@ public class InboundConfiguration {
                         operationExpertLogService.saveExpertOperationDBAndBQ(expertOperationDTO);
                     }
                 }
-            } catch (IOException e) {
-                log.info("Message: {}, Cause: {}", e.getMessage(), e.getCause());
+            } catch (IOException | ExpertNotFoundException e) {
+                if(e instanceof ExpertNotFoundException){
+                    String code = ((ExpertNotFoundException) e).getCode();
+                    log.info("Code: {}, Message: {}", code, e.getMessage());
+                } else {
+                    log.info("Message: {}, Cause: {}", e.getMessage(), e.getCause());
+                }
             }
             //log.info("headers {}", message.getHeaders());
 

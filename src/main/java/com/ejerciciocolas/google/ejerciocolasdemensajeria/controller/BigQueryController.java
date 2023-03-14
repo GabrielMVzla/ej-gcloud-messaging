@@ -24,7 +24,7 @@ public class BigQueryController {
      * Muestra la informaci&#243;n de manera paginada los expertos almacenada en gcloud BigQuery
      *
      * @param page Integer
-     * @return Page<Map<String, Object>>
+     * @return Page&#60;Map&#60;String, Object>>
      * @throws InterruptedException
      */
     @GetMapping("/experts-info-bq/{page}")
@@ -35,7 +35,7 @@ public class BigQueryController {
     /**
      * Retorna un listado con la informaci&#243;n general de las/los expert@s
      *
-     * @return List<ExpertInfoBigQueryDTO>
+     * @return List&#60;ExpertInfoBigQueryDTO>
      */
     @GetMapping("/experts-info")
     public List<ExpertInfoBigQueryDTO> getExpertInfoFromBigQuery() {
