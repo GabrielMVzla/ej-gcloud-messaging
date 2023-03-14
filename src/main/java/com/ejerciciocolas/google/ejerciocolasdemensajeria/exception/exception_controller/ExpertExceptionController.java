@@ -35,14 +35,26 @@ public class ExpertExceptionController {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidateException(MethodArgumentNotValidException exception){
-        Map<String, String> response = new HashMap<>();
+    public Map<String, Object> handleValidateException(MethodArgumentNotValidException exception){
+        /*Map<String, String> response = new HashMap<>();
         exception.getBindingResult().getFieldErrors()
                     .stream()
                     .forEach(err -> {
                         response.put(err.getField(),  err.getDefaultMessage());
                     });
 
-            return response;
+         */
+        Map<String, Object> response = new HashMap<>();
+
+        List<String> errors =  exception.getBindingResult().getFieldErrors()
+                .stream()
+                .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
+//					.map(err -> { return "El campo '" + err.getField() + "' " + err.getDefaultMessage()})
+                .collect(Collectors.toList());
+
+        response.put("message", "error");
+        response.put("errors", errors);
+
+        return response;
     }
 }
