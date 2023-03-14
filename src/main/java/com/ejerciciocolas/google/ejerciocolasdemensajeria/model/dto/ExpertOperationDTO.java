@@ -23,6 +23,7 @@ public class ExpertOperationDTO {
     private String operationType;
 
     @JsonAlias("amount_entered")
+    @Min(value = 1, message = "El monto agregado debe ser de al menos 1 en adelante")
     private double amountEntered;
 
 }

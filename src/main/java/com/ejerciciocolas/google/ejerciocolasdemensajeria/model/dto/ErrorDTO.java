@@ -12,6 +12,6 @@ public class ErrorDTO {
 
     private String code;
     private String message;
-    private Throwable cause;
+    //private Throwable cause;
 
 }
