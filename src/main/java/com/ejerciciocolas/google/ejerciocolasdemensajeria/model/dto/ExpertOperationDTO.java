@@ -5,7 +5,6 @@ import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 @Builder
 @NoArgsConstructor
@@ -20,7 +19,7 @@ public class ExpertOperationDTO {
     private long idExpert;
 
     @JsonAlias("operation_type")
-    @NotBlank
+    @NotBlank(message = "campo \"operationType\" no debe estar vacío.")
     private String operationType;
 
     @JsonAlias("amount_entered")

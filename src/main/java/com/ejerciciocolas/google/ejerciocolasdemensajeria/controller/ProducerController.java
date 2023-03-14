@@ -72,8 +72,6 @@ public class ProducerController {
     public ResponseEntity<String> publishExpertOperation(@Valid @RequestBody ExpertOperationDTO expertOperationDTO, BindingResult result) {
 
 
-
-
         if (!expertOperationDTO.getOperationType().isEmpty() && expertOperationDTO.getOperationType() != null) {
 
             log.info("Mensaje saliente {}", expertOperationDTO.toString());
