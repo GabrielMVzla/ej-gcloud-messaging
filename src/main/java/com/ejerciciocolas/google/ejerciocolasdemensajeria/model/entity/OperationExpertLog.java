@@ -40,6 +40,7 @@ public class OperationExpertLog implements Serializable {
 
     @JsonProperty(required = false)
     @JoinColumn(name = "operation_date")
+    @Temporal(TemporalType.DATE) //para indicar que trabajaremos con Date, tranforma fecha de java a fecha de sql
     private LocalDateTime operationDate;
 
     @JsonIgnore

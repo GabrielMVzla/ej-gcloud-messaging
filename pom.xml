@@ -86,8 +86,11 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 			<version>3.0.3</version>
 		</dependency-->
-
-
+		<!-- Validation -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
 		<!-- csv doc to send to bigquery-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

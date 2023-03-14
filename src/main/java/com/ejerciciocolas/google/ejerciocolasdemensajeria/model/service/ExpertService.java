@@ -68,8 +68,8 @@ public class ExpertService {
 
         List<GeneralInfoExpertDTO> generalInfoExpertDTOs = new ArrayList<>();
         Map<Long, List<OperationExpertLog>> mapOperationExpertLogs = new HashMap<>();
-        long expertTotalPoint = 0;
-        long acumulatedResidualPoints = 0;
+        long expertTotalPoint = 0L;
+        long acumulatedResidualPoints = 0L;
 
         for (Expert expert : experts) {
             long idExpert = expert.getId(); //id del/(de la) expert@
